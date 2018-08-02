@@ -1,0 +1,73 @@
+.card-list {
+  width: 100%;
+}
+.card {
+  margin: 3px;
+  color: #F2EEE9;
+  float: left;
+  position: relative;
+  width: 18%;
+  min-width: 200px;
+}
+.card .line {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 1px;
+  padding: 6px 10px 0;
+}
+.card .details {
+  color: #D9D4CE;
+  font: 12px Source Sans Pro;
+  font-size: 11px;
+  font-weight: 300;
+  float: right;
+}
+.card .title {
+  display: inline-block;
+  font-size: 11px;
+  padding: 0px 10px 0;
+  text-transform: uppercase;
+}
+.card .value {
+  font-size: 44px;
+  padding: 0 10px;
+}
+.card.red {
+  border: 5px solid #BF4D24;
+  border-radius: 5px;
+  background-color: #BF4D24;
+}
+.card.orange {
+  border: 5px solid #D17A1D;
+  border-radius: 5px;
+  background-color: #D17A1D;
+}
+.card.yellow {
+  border: 5px solid #C7922C;
+  border-radius: 5px;
+  background-color: #C7922C;
+}
+.card.darkgray {
+  border: 5px solid #141412;
+  border-radius: 5px;
+  background-color: #141412;
+}
+.card.medgray {
+  border: 5px solid #42403C;
+  border-radius: 5px;
+  background-color: #42403C;
+}
+body {
+  background-color: #1b2431;
+  color: #202020;
+  font-family: "Montserrat", "Helvetica", "Open Sans", "Arial";
+  font-size: 13px;
+}
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 10px;
+}
+
+.dashicons {
+  font-size: 14px;
+}
