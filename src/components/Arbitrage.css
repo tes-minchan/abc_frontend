@@ -23,12 +23,36 @@
 }
 .card .title {
   display: inline-block;
-  font-size: 11px;
+  font-size: 19px;
   padding: 0px 10px 0;
   text-transform: uppercase;
+  color: #D9D4CE;
 }
+
 .card .value {
   font-size: 44px;
+  padding: 0 10px;
+}
+
+.card .buyMarketText {
+  font-size: 16px;
+  color: tomato;
+  padding: 0 10px;
+}
+.card .buyMarket {
+  font-size: 13px;
+  color: tomato;
+  padding: 0 10px;
+}
+
+.card .sellMarketText {
+  font-size: 16px;
+  color: powderblue;
+  padding: 0 10px;
+}
+.card .sellMarket {
+  font-size: 13px;
+  color: powderblue;
   padding: 0 10px;
 }
 .card.red {
@@ -66,6 +90,7 @@ body {
   margin: 0 auto;
   max-width: 1200px;
   padding: 10px;
+  text-align: center;
 }
 
 .dashicons {

@@ -2,67 +2,94 @@ import React, { Component, Fragment } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import Header from 'components/Header';
 import './Arbitrage.css';
+import _ from 'underscore';
 
 class Arbitrage extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  _getMessage = (message) => {
+    let getMessage    = JSON.parse(message);
+    let orderbookArr = [];
+
+    _.map(getMessage.market,(item,index) => {
+      let orderbook = {
+        market : item,
+        orderbook : getMessage.data[index]
+      }
+
+      orderbookArr.push(orderbook);
+    })
+
+    this.setState({
+      orderbookArr
+    })
+    
+  }
+
+  onSocketOpen = () => {
+    let subscribe = {
+      channel : "Arbitrage",
+    }
+
+    this.socket.send(JSON.stringify(subscribe));
+  }
+
+  componentDidMount() {
+    this.socket = new WebSocket('ws://localhost:3600');
+    // this.socket = new WebSocket('ws://13.125.2.107:3600');
+    this.socket.onopen = () => this.onSocketOpen()
+    this.socket.onmessage = (m) => this._getMessage(m.data)
+  }
 
   render() {
     return (
       <Fragment>
         <Header />
-        <Arbitrage_Left />
+        <div className="container card-list">
+          <RenderOrderbookCard orderbook={this.state.orderbookArr}/>
+        </div>
+
       </Fragment>
 
     )
   }
 }
 
-class Arbitrage_Left extends Component {
-  render() {
-    return (
-      <div>
-        <div class="container card-list">
+function RenderOrderbookCard({orderbook}) {
 
-        <div class="card medgray">
-          <div class="title">points</div>
-          <div class="value">332</div>
-        <div class="title">last 30 days: </div>
-          <div class="line"><a href="https://www.zevo.io/cc-dashboard/" class="details"><span class="dashicons dashicons-arrow-right-alt2"></span>Points</a></div></div>
+  const orderbookArea = orderbook? (
 
+    orderbook.map((info, index) => {
+      let parseOrderbook = JSON.parse(info.orderbook);
+      let marketGap = Number(parseOrderbook.buy.maxAsk) - Number(parseOrderbook.sell.minBid);
 
-        <div class="card red">
-          <div class="title">scenes</div>
-          <div class="value">12</div>
-          <div class="title">last 30 days: </div>
-          <div class="line"><a href="https://www.zevo.io/cc-dashboard/" class="details"><span class="dashicons dashicons-arrow-right-alt2"></span>Scenes & Uses</a></div></div>
+      return (
+        <div className="card medgray" key = {index}>
+          <div className="title">{info.market}</div>
+          <div className="line"></div>
+          <div>
+            <div className="buyMarketText">{parseOrderbook.buy.market} </div>
+            <div className="buyMarketText">{parseOrderbook.buy.maxAsk} </div>
+            <div className="buyMarket"> {parseOrderbook.buy.volume}</div>
 
+            <div className="value">{marketGap}</div>
+            <div className="sellMarketText">{parseOrderbook.sell.market}</div>
+            <div className="sellMarketText">{parseOrderbook.sell.minBid} </div>
+            <div className="sellMarket">{parseOrderbook.sell.volume}</div>
 
-        <div class="card orange">
-          <div class="title">total uses</div>
-          <div class="value">32</div>
-          <div class="title">last 30 days:</div>
-          <div class="line"><a href="https://www.zevo.io/cc-dashboard/" class="details"><span class="dashicons dashicons-arrow-right-alt2"></span>Scenes & Uses</a></div></div>
-
-
-        <div class="card yellow">
-          <div class="title">total earnings</div>
-          <div class="value">$212</div>
-          <div class="title">total payouts: $</div>
-          <div class="line"><a href="https://www.zevo.io/cc-dashboard/" class="details"><span class="dashicons dashicons-arrow-right-alt2"></span>Payout History</a></div></div>
-
-
-        <div class="card darkgray">
-          <div class="title">royalties due</div>
-          <div class="value">$112</div>
-          <div class="title">test</div>
-          <div class="line"><a href="https://www.zevo.io/cc-dashboard/" class="details"><span class="dashicons dashicons-arrow-right-alt2"></span>Request Payout</a></div></div>
-
+          </div>
         </div>
+     
+      )
+    })    
+  ) : null;
 
-      </div>
+  return orderbookArea;
 
-    )
-  }
-  
 }
 
 export default Arbitrage;

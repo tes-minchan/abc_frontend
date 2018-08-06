@@ -30,7 +30,7 @@ class Header extends Component {
 
   render() {
     return (
-      <Fragment className="Header">
+      <Fragment>
         <Navbar color="light" light expand="md">
           <NavbarBrand href="/"><h3 className="text-success">ABC Project</h3></NavbarBrand>
           <Collapse  navbar>
