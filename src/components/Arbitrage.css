@@ -30,7 +30,7 @@
 }
 
 .card .value {
-  font-size: 44px;
+  font-size: 30px;
   padding: 0 10px;
 }
 
@@ -54,6 +54,21 @@
   font-size: 13px;
   color: powderblue;
   padding: 0 10px;
+}
+
+.card .profitTab1st {
+  font-size: 13px;
+  text-align: left;
+
+}
+.card .profitTab2nd {
+  text-align: left;
+
+}
+
+.card h5 {
+  font-size: 11px;
+
 }
 .card.red {
   border: 5px solid #BF4D24;

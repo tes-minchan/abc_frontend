@@ -39,8 +39,8 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    this.socket = new WebSocket('ws://localhost:3600');
-    // this.socket = new WebSocket('ws://13.125.2.107:3600');
+    // this.socket = new WebSocket('ws://localhost:3600');
+    this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this._getMessage(m.data)
   }
@@ -67,26 +67,27 @@ function RenderOrderbookCard({orderbook}) {
     
     orderbook.map((info, index) => {
       let parseOrderbook = JSON.parse(info.orderbook);
-      let askPrice = Number(parseOrderbook.sell.maxAsk);
-      let bidPrice = Number(parseOrderbook.buy.minBid);
+      let askPrice = Number(parseOrderbook.buy.minAsk);
+      let bidPrice = Number(parseOrderbook.sell.maxBid);
 
-      let marketGap = askPrice - bidPrice;
+      let marketGap = bidPrice - askPrice;
       
       return (
         <div className="card darkgray" key = {index}>
           <div className="title">{info.market}</div>
           <div className="line"></div>
           <div>
+            <h5>ASK</h5>
+            <div className="sellMarketText">{parseOrderbook.buy.market}</div>
+            <div className="sellMarketText">₩{parseOrderbook.buy.minAsk}</div>
+            <div className="sellMarket">{parseOrderbook.buy.volume} {info.market}</div>
 
-            <div className="sellMarketText">{parseOrderbook.sell.market}</div>
-            <div className="sellMarketText">{parseOrderbook.sell.maxAsk} </div>
-            <div className="sellMarket">{parseOrderbook.sell.volume}</div>
+            <div className="value">₩{marketGap}</div>
 
-            <div className="value">{marketGap}</div>
-
-            <div className="buyMarketText">{parseOrderbook.buy.market} </div>
-            <div className="buyMarketText">{parseOrderbook.buy.minBid} </div>
-            <div className="buyMarket"> {parseOrderbook.buy.volume}</div>
+            <h5>BID</h5>
+            <div className="buyMarketText">{parseOrderbook.sell.market} </div>
+            <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} </div>
+            <div className="buyMarket"> {parseOrderbook.sell.volume} {info.market}</div>
 
           </div>
         </div>
@@ -105,30 +106,23 @@ function RenderArbitrageCard({orderbook}) {
     
     orderbook.map((info, index) => {
       let parseOrderbook = JSON.parse(info.orderbook);
-      let askVol = Number(parseOrderbook.sell.volume);
-      let bidVol = Number(parseOrderbook.buy.volume);
+      let askVol = Number(parseOrderbook.buy.volume);
+      let bidVol = Number(parseOrderbook.sell.volume);
 
-      let askPrice = Number(parseOrderbook.sell.maxAsk);
-      let bidPrice = Number(parseOrderbook.buy.minBid);
-
+      let askPrice = Number(parseOrderbook.buy.minAsk);
+      let bidPrice = Number(parseOrderbook.sell.maxBid);
+      
       let minCoinVol = (askVol > bidVol) ? bidVol : askVol;
       let requireMoney = (askPrice*minCoinVol).toFixed(1);
-      let possiableProfit = Math.floor(minCoinVol*(askPrice - bidPrice));
+      let possiableProfit = Math.floor(minCoinVol*(bidPrice - askPrice));
 
       let percentageProfit = (possiableProfit/requireMoney) * 100;
       percentageProfit = percentageProfit.toFixed(2);
 
       // ******* //
-      // 1st
-      let maxRequireMoney = minCoinVol * askPrice;
 
-      // 2nd 
-      // minCoinVol
-
-      // 3rd 
-      let profit2 = maxRequireMoney/bidPrice - minCoinVol;
-
-
+      let maxRequireMoney = minCoinVol * bidPrice;
+      let profit2 = (maxRequireMoney/askPrice - minCoinVol).toFixed(4);
       let profit2_percentage = (profit2/minCoinVol) * 100;
       profit2_percentage = profit2_percentage.toFixed(2);
 
@@ -136,18 +130,18 @@ function RenderArbitrageCard({orderbook}) {
         <div className="card medgray" key = {index}>
           <div className="title">{info.market}</div>
           <div className="line"></div>
-          <div>
-            <div className="buyMarketText">M.C.V : {minCoinVol} </div>
-            <div className="buyMarketText">R.M : {requireMoney} </div>
-            <div className="buyMarketText">Profit : {possiableProfit}</div>
-            <div className="buyMarketText"> {percentageProfit}%</div>
+          <div className="profitTab1st">
+            <div>Min.Vol    : {minCoinVol} {info.market}</div>
+            <div>Required   : ₩{requireMoney} </div>
+            <div>Profit     : ₩{possiableProfit}</div>
+            <div>Percentage : {percentageProfit}%</div>
 
             <div className="line"></div>
 
-            <div className="sellMarketText">Max : {maxRequireMoney}</div>
-            <div className="sellMarketText">R.Coin : {minCoinVol} </div>
-            <div className="sellMarket">Profit : {profit2}</div>
-            <div className="sellMarket">{profit2_percentage}%</div>
+            <div>Max. : ₩{maxRequireMoney}</div>
+            <div>Required : {minCoinVol} {info.market}</div>
+            <div>Profit : {profit2} {info.market}</div>
+            <div>Percentage : {profit2_percentage}%</div>
 
           </div>
         </div>
