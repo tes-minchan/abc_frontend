@@ -39,8 +39,8 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    // this.socket = new WebSocket('ws://localhost:3600');
-    this.socket = new WebSocket('ws://13.125.2.107:3600');
+    this.socket = new WebSocket('ws://localhost:3600');
+    // this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this._getMessage(m.data)
   }
@@ -138,7 +138,7 @@ function RenderArbitrageCard({orderbook}) {
 
             <div className="line"></div>
 
-            <div>Max. : ₩{maxRequireMoney}</div>
+            <div>Max. : ₩{maxRequireMoney.toFixed(2)}</div>
             <div>Required : {minCoinVol} {info.market}</div>
             <div>Profit : {profit2} {info.market}</div>
             <div>Percentage : {profit2_percentage}%</div>
