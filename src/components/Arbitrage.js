@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import Header from 'components/Header';
+import MarketInfo from 'components/MarketInfo';
+
 import './Arbitrage.css';
 import _ from 'underscore';
 
@@ -39,8 +41,8 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    // this.socket = new WebSocket('ws://localhost:3600');
-    this.socket = new WebSocket('ws://13.125.2.107:3600');
+    this.socket = new WebSocket('ws://localhost:3600');
+    // this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this._getMessage(m.data)
   }
@@ -49,6 +51,7 @@ class Arbitrage extends Component {
     return (
       <Fragment>
         <Header />
+        <MarketInfo />
         <div className="container card-list">
           <RenderOrderbookCard orderbook={this.state.orderbookArr}/>
           <RenderArbitrageCard orderbook={this.state.orderbookArr}/>
@@ -144,7 +147,7 @@ function RenderArbitrageCard({orderbook}) {
             <div className="line"></div>
 
             <div className="profitTitle">Coin Benefit</div>
-            <div className="benefit">Req. Funds : {requiredCoinFunds} {info.market}</div>
+            <div className="benefit">Req. Funds : ₩ {Math.floor(requiredCoinFunds)}</div>
             <div className="benefit">Profit     : {coinProfit} {info.market}</div>
             <div className="line"></div>
             <div className="common">Trade Vol : {minCoinVol} {info.market}</div>
