@@ -49,10 +49,10 @@ class Header extends Component {
                 <NavLink href="/Arbitrage" >Arbitrage</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="/Login">Login</NavLink>
+                <NavLink href="/Login">Log in</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="/Signin">Signin</NavLink>
+                <NavLink href="/Signup">Sign up</NavLink>
               </NavItem>
             </Nav>
           </Collapse>
