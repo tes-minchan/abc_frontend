@@ -39,8 +39,8 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    this.socket = new WebSocket('ws://localhost:3600');
-    // this.socket = new WebSocket('ws://13.125.2.107:3600');
+    // this.socket = new WebSocket('ws://localhost:3600');
+    this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this._getMessage(m.data)
   }
@@ -113,35 +113,42 @@ function RenderArbitrageCard({orderbook}) {
       let bidPrice = Number(parseOrderbook.sell.maxBid);
       
       let minCoinVol = (askVol > bidVol) ? bidVol : askVol;
-      let requireMoney = (askPrice*minCoinVol).toFixed(1);
-      let possiableProfit = Math.floor(minCoinVol*(bidPrice - askPrice));
 
-      let percentageProfit = (possiableProfit/requireMoney) * 100;
-      percentageProfit = percentageProfit.toFixed(2);
+      // Fiat Benefit
+      let requiredFiatFunds = (askPrice*minCoinVol);
+      let fiatProfit = minCoinVol * (bidPrice - askPrice);
+      fiatProfit = fiatProfit;
 
-      // ******* //
+      // Crypto Coin Benefit
+      let requiredCoinFunds = (minCoinVol * bidPrice);
+      let coinProfit = (requiredCoinFunds/askPrice - minCoinVol);
 
-      let maxRequireMoney = minCoinVol * bidPrice;
-      let profit2 = (maxRequireMoney/askPrice - minCoinVol).toFixed(4);
-      let profit2_percentage = (profit2/minCoinVol) * 100;
-      profit2_percentage = profit2_percentage.toFixed(2);
+      // Common value.
+      let percentageProfit = (coinProfit/minCoinVol) * 100;
+      percentageProfit = percentageProfit;
+
+      // calculate values for visiual.
+      let digit = 4;
+      requiredCoinFunds = Math.round(requiredCoinFunds * Math.pow(10,digit)) / Math.pow(10,digit);
+      coinProfit = Math.round(coinProfit * Math.pow(10,digit)) / Math.pow(10,digit);
+      minCoinVol = Math.round(minCoinVol * Math.pow(10,digit)) / Math.pow(10,digit);
 
       return (
         <div className="card medgray" key = {index}>
           <div className="title">{info.market}</div>
           <div className="line"></div>
           <div className="profitTab1st">
-            <div>Min.Vol    : {minCoinVol} {info.market}</div>
-            <div>Required   : ₩{requireMoney} </div>
-            <div>Profit     : ₩{possiableProfit}</div>
-            <div>Percentage : {percentageProfit}%</div>
-
+            <div className="profitTitle">Fiat Benefit</div>
+            <div className="benefit">Req. Funds : ₩ {Math.floor(requiredFiatFunds)}</div>
+            <div className="benefit">Profit     : ₩ {Math.floor(fiatProfit)}</div>
             <div className="line"></div>
 
-            <div>Max. : ₩{maxRequireMoney.toFixed(2)}</div>
-            <div>Required : {minCoinVol} {info.market}</div>
-            <div>Profit : {profit2} {info.market}</div>
-            <div>Percentage : {profit2_percentage}%</div>
+            <div className="profitTitle">Coin Benefit</div>
+            <div className="benefit">Req. Funds : {requiredCoinFunds} {info.market}</div>
+            <div className="benefit">Profit     : {coinProfit} {info.market}</div>
+            <div className="line"></div>
+            <div className="common">Trade Vol : {minCoinVol} {info.market}</div>
+            <div className="common">Percentage : {Math.round(percentageProfit*100)/100}%</div>
 
           </div>
         </div>

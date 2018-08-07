@@ -56,14 +56,21 @@
   padding: 0 10px;
 }
 
-.card .profitTab1st {
-  font-size: 13px;
-  text-align: left;
+.card .profitTitle {
+  font-size: 14px;
+  text-align: center;
 
 }
-.card .profitTab2nd {
-  text-align: left;
 
+.card .benefit {
+  font-size: 13px;
+  text-align: left;
+  color: #C7922C;
+}
+
+.card .common {
+  text-align: left;
+  color: #FFC312;
 }
 
 .card h5 {
