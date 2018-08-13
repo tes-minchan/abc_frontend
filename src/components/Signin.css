@@ -115,6 +115,11 @@
   color: #0d93ff;
   padding-top: 8px;
 }
+.login .signbutton {
+  padding: 10px 10px;
+  margin : 10px 10px;
+  text-align: center;
+}
 
 .login input[type=submit] {
   padding: 5px 20px;

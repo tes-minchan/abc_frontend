@@ -8,7 +8,12 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Badge,
+  Button,
+  Form
 } from 'reactstrap';
+import jwt_decode  from 'jwt-decode';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Header.css';
 
@@ -18,9 +23,21 @@ class Header extends Component {
     super(props);
     this.toggle = this.toggle.bind(this);
     this.state = {
-      dropdownOpen: false
+      dropdownOpen: false,
+      userid : null
     };
   }
+
+  componentDidMount() {
+    const getToken = sessionStorage.getItem('token');
+    if(getToken) {
+      const signin_check = jwt_decode(getToken);
+      this.setState({
+        userid : signin_check.id
+      });
+    }
+  }
+
 
   toggle() {
     this.setState({
@@ -28,7 +45,32 @@ class Header extends Component {
     });
   }
 
+  onClickSignOut = () => {
+    sessionStorage.clear();
+  }
+
   render() {
+    const userinfoArea = this.state.userid? (
+    
+      <Fragment>
+        <h4><Badge color="success" className="userid">{this.state.userid}</Badge></h4>
+        <Form onClick={this.onClickSignOut}>
+
+        <Button outline color="primary" className="signout">Sign Out</Button>
+        </Form>
+      </Fragment>
+
+    ) : (
+      <Fragment>
+        <NavItem>
+          <NavLink href="/Signin">Sign in</NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink href="/Signup">Sign up</NavLink>
+        </NavItem>
+      </Fragment>
+    );
+
     return (
       <Fragment>
         <Navbar color="light" light expand="md">
@@ -48,12 +90,7 @@ class Header extends Component {
               <NavItem>
                 <NavLink href="/Arbitrage" >Arbitrage</NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink href="/Login">Log in</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="/Signup">Sign up</NavLink>
-              </NavItem>
+              {userinfoArea}
             </Nav>
           </Collapse>
         </Navbar>

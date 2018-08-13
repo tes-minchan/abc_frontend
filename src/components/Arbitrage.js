@@ -5,12 +5,14 @@ import MarketInfo from 'components/MarketInfo';
 
 import './Arbitrage.css';
 import _ from 'underscore';
+import * as Api from 'lib/api';
 
 class Arbitrage extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+    };
   }
 
   _getMessage = (message) => {
@@ -44,7 +46,8 @@ class Arbitrage extends Component {
     this.socket = new WebSocket('ws://localhost:3600');
     // this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
-    this.socket.onmessage = (m) => this._getMessage(m.data)
+    this.socket.onmessage = (m) => this._getMessage(m.data);
+
   }
 
   render() {
@@ -53,18 +56,126 @@ class Arbitrage extends Component {
         <Header />
         <MarketInfo />
         <div className="container card-list">
-          <RenderOrderbookCard orderbook={this.state.orderbookArr}/>
+          <RenderCoinInfo orderbook={this.state.orderbookArr} />
+          {/* <RenderOrderbookCard orderbook={this.state.orderbookArr}/> */}
           <RenderArbitrageCard orderbook={this.state.orderbookArr}/>
-
+          <RenderOrdersendButton orderinfo ={""}/>
         </div>
-
       </Fragment>
 
     )
   }
 }
 
+class RenderCoinInfo extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  onClickCoinSelect = (e) => {
+    console.log(e.target.innerHTML);
+    console.log(this.refs);
+  }
+
+  render() {
+    const modifyValues = function(values) {
+      let modified = values * 10000;
+      modified = Math.round(modified) / 10000;
+  
+      return modified;
+    }
+  
+    const orderbookArea = this.props.orderbook? (
+      
+      this.props.orderbook.map((info, index) => {
+        let parseOrderbook = JSON.parse(info.orderbook);
+        let askPrice = Number(parseOrderbook.buy.minAsk);
+        let bidPrice = Number(parseOrderbook.sell.maxBid);
+  
+        let marketGap = bidPrice - askPrice;
+        
+        return (
+          <div className="card darkgray" key = {index}>
+            <div className="title">{info.market}</div>
+            <div className="line"></div>
+            <div>
+              <Button bsStyle="primary" onClick={this.onClickCoinSelect} id={info.market+ "_button"} >{info.market}</Button>
+  
+              <div className="sellMarketText">{parseOrderbook.buy.market} ASK</div>
+              <div className="sellMarketText">₩{parseOrderbook.buy.minAsk} / {modifyValues(parseOrderbook.buy.volume)} {info.market}</div>
+  
+              <div className="value">₩{marketGap}</div>
+  
+              <div className="buyMarketText">{parseOrderbook.sell.market} BID</div>
+              <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} / {modifyValues(parseOrderbook.sell.volume)} {info.market} </div>
+  
+            </div>
+          </div>
+       
+        )
+      })    
+    ) : null;
+
+    return (
+      <Fragment>
+        {orderbookArea}
+      </Fragment>
+
+    )
+  }
+}
+
+function RenderOrdersendButton(orderinfo) {
+  function onClickButton() {
+    console.log("BUY");
+  }
+
+  const ordersendArea = orderinfo? (
+    <div>
+
+      <div className="ordersendcard orange">
+        <div className="title">BUY</div>
+        <div>
+          <Input name="buy_price" id="buy_price" placeholder="price" /> <br />
+          <Input name="volume" id="volume" placeholder="volume" /> <br />
+          <Button onClick={onClickButton}>BUY</Button>
+        </div>
+      </div>
+
+      <div className="ordersendcard orange">
+        <div className="title">ARBITRAGE</div>
+        <div>
+          <Button onClick={onClickButton}>BUY && SELL</Button>
+
+        </div>
+      </div>
+
+      <div className="ordersendcard orange">
+        <div className="title">SELL</div>
+        <div>
+          <Input name="price" id="price" placeholder="price" /> <br />
+          <Input name="volume" id="volume" placeholder="volume" /> <br />
+          <Button onClick={onClickButton}>SELL</Button>
+        </div>
+      </div>
+
+    </div>
+  ) : null;
+
+  return ordersendArea;
+}
+
 function RenderOrderbookCard({orderbook}) {
+
+  const modifyValues = function(values) {
+    let modified = values * 10000;
+    modified = Math.round(modified) / 10000;
+
+    return modified;
+  }
 
   const orderbookArea = orderbook? (
     
@@ -80,17 +191,15 @@ function RenderOrderbookCard({orderbook}) {
           <div className="title">{info.market}</div>
           <div className="line"></div>
           <div>
-            <h5>ASK</h5>
-            <div className="sellMarketText">{parseOrderbook.buy.market}</div>
-            <div className="sellMarketText">₩{parseOrderbook.buy.minAsk}</div>
-            <div className="sellMarket">{parseOrderbook.buy.volume} {info.market}</div>
+            <Button bsStyle="primary">Select</Button>
+
+            <div className="sellMarketText">{parseOrderbook.buy.market} ASK</div>
+            <div className="sellMarketText">₩{parseOrderbook.buy.minAsk} / {modifyValues(parseOrderbook.buy.volume)} {info.market}</div>
 
             <div className="value">₩{marketGap}</div>
 
-            <h5>BID</h5>
-            <div className="buyMarketText">{parseOrderbook.sell.market} </div>
-            <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} </div>
-            <div className="buyMarket"> {parseOrderbook.sell.volume} {info.market}</div>
+            <div className="buyMarketText">{parseOrderbook.sell.market} BID</div>
+            <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} / {modifyValues(parseOrderbook.sell.volume)} {info.market} </div>
 
           </div>
         </div>
@@ -138,7 +247,7 @@ function RenderArbitrageCard({orderbook}) {
 
       return (
         <div className="card medgray" key = {index}>
-          <div className="title">{info.market}</div>
+          {/* <div className="title">{info.market}</div> */}
           <div className="line"></div>
           <div className="profitTab1st">
             <div className="profitTitle">Fiat Benefit</div>
@@ -162,5 +271,9 @@ function RenderArbitrageCard({orderbook}) {
 
   return orderbookArea;
 }
+
+
+
+
 export default Arbitrage;
 

@@ -1,8 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+
+
+import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
+
 import './MarketInfo.css';
-import axios from 'axios';
-import jsonwebtoken from 'jsonwebtoken';
+// import './Arbitrage.css';
+
+import * as Api from 'lib/api';
+import _ from 'underscore';
 
 
 class MarketInfo extends Component {
@@ -11,38 +16,91 @@ class MarketInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.currencyInfo = ['KRW','BTC', 'EOS', 'ETH', 'ZRX', 'XRP'];
+
   }
 
   
   componentDidMount() {
-    const payload = {access_key: 'VxinLzDJd60CZdAjJzxmnpxQdIatFHmADSSLu9F2', nonce: (new Date).getTime()};
-    const token = jsonwebtoken.sign(payload, 'mn7pxWXr3KMoJkHXqHxEsarnvSymMUke8y2FQOVu');
+    Api.GetBalance()
+    .then((data) => {
+      let toSetStateMarket = {};
+      _.map(data.data, (values, market) => {
+        toSetStateMarket[market] = values
+      })
 
-    var config = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization':  `Bearer ${token}`,
-      }
-    };
+      this.setState({
+        market : toSetStateMarket
+      });
 
-    axios.get('https://api.upbit.com/v1/accounts', config)
-    .then( response => { console.log(response)})
-    .catch( response => { console.log(response); } );     
-
+    }, (err) => {
+      // Need to error control
+      console.log(err.response)
+    });
   }
 
 
   render() {
     return (
       <Fragment>
-        <div className="market_container">
-          TEST
+
+        <div className="marketcontainer card-list">
+          <RenderMarketCard currency = {this.currencyInfo} marketinfo = {this.state.market}/>
         </div>
+
       </Fragment>
 
     )
   }
 
 }
+
+function RenderMarketCard({currency, marketinfo}) {
+
+  const modifyValues = function(values) {
+    let modified = values * 10000;
+    modified = Math.round(modified) / 10000;
+
+    return modified;
+  }
+
+  const renderValues = function(market, currency) {
+    let returnValues = null;
+    if(marketinfo) {
+      returnValues = marketinfo[market].map(item => {
+        if(item.currency === currency) {
+          return (
+            <div>
+              <div className="valuetitle"> {market}</div> <h5> {modifyValues(item.available)} {currency} </h5>
+            </div>
+          )
+        }
+      });
+
+    }
+
+    return returnValues;
+  }
+
+  const marketCardArea = currency ? (
+    currency.map((item, index) => {
+      return (
+        <div className="marketcard orange" key = {index}>
+          <div className="title">{item} </div>
+          <div className="line"></div>
+          {renderValues("upbit", item)}
+          {renderValues("bithumb", item)}
+          {renderValues("coinone", item)}
+          {renderValues("gopax", item)}
+          {/* {renderValues("korbit", item)} */}
+
+        </div>
+      )
+    })
+  ) : null;
+
+  return marketCardArea;
+}
+
 
 export default MarketInfo;
