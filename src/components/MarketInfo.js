@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types'
 
 
 import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
@@ -20,8 +21,21 @@ class MarketInfo extends Component {
 
   }
 
+  static propTypes = {
+    onRef: PropTypes.func,
+  }
+
+  componentWillUnmount() {
+    this.props.onRef(undefined)
+  }
+
+  getMarketInfo = () => {
+    return this.state.market
+  }
   
   componentDidMount() {
+    this.props.onRef(this)
+
     Api.GetBalance()
     .then((data) => {
       let toSetStateMarket = {};

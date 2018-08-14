@@ -53,10 +53,12 @@ class Header extends Component {
     const userinfoArea = this.state.userid? (
     
       <Fragment>
+        <NavItem>
+          <NavLink href="/Setting" >Setting</NavLink>
+        </NavItem>
         <h4><Badge color="success" className="userid">{this.state.userid}</Badge></h4>
         <Form onClick={this.onClickSignOut}>
-
-        <Button outline color="primary" className="signout">Sign Out</Button>
+          <Button outline color="primary" className="signout">Sign Out</Button>
         </Form>
       </Fragment>
 

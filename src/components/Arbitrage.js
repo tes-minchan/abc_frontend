@@ -1,5 +1,9 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
+import Switch from "react-switch";
+
+import PropTypes from 'prop-types'
+
 import Header from 'components/Header';
 import MarketInfo from 'components/MarketInfo';
 
@@ -15,8 +19,10 @@ class Arbitrage extends Component {
     };
   }
 
+
   _getMessage = (message) => {
     let getMessage    = JSON.parse(message);
+
     let orderbookArr = [];
 
     _.map(getMessage.market,(item,index) => {
@@ -35,8 +41,11 @@ class Arbitrage extends Component {
   }
 
   onSocketOpen = () => {
+    const getSubscribeCoin = sessionStorage.getItem('arbitrabe_subscribe');
+
     let subscribe = {
-      channel : "Arbitrage",
+      channel  : "Arbitrage",
+      sub_coin : getSubscribeCoin
     }
 
     this.socket.send(JSON.stringify(subscribe));
@@ -47,19 +56,30 @@ class Arbitrage extends Component {
     // this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this._getMessage(m.data);
+  }
+
+  clickCoinSelect = (coin) => {
+    const marketInfo = this.marketInfo.getMarketInfo();
+    this.state.orderbookArr.map(item => {
+      if(item.market === coin) {
+        this.sendBtn.getInformations(item, marketInfo, coin);
+        return;
+      }
+    })
 
   }
 
   render() {
+    const {clickCoinSelect} = this;
     return (
       <Fragment>
         <Header />
-        <MarketInfo />
+        <MarketInfo onRef={ (el) => this.marketInfo = el}/>
         <div className="container card-list">
-          <RenderCoinInfo orderbook={this.state.orderbookArr} />
+          <RenderCoinInfo orderbook={this.state.orderbookArr} onClickBtn={clickCoinSelect}/>
           {/* <RenderOrderbookCard orderbook={this.state.orderbookArr}/> */}
           <RenderArbitrageCard orderbook={this.state.orderbookArr}/>
-          <RenderOrdersendButton orderinfo ={""}/>
+          <RenderOrdersendButton orderinfo ={"11"} onRef={ (el) => this.sendBtn = el} />
         </div>
       </Fragment>
 
@@ -72,12 +92,18 @@ class RenderCoinInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      checked: false
     };
-  }
 
+  }
+  handleChange = (checked) => {
+    this.setState({
+      checked : checked
+    })
+  }
   onClickCoinSelect = (e) => {
-    console.log(e.target.innerHTML);
-    console.log(this.refs);
+    const {onClickBtn} = this.props;
+    onClickBtn(e.target.innerHTML)
   }
 
   render() {
@@ -91,7 +117,7 @@ class RenderCoinInfo extends Component {
     const orderbookArea = this.props.orderbook? (
       
       this.props.orderbook.map((info, index) => {
-        let parseOrderbook = JSON.parse(info.orderbook);
+        let parseOrderbook = (info.orderbook);
         let askPrice = Number(parseOrderbook.buy.minAsk);
         let bidPrice = Number(parseOrderbook.sell.maxBid);
   
@@ -99,11 +125,9 @@ class RenderCoinInfo extends Component {
         
         return (
           <div className="card darkgray" key = {index}>
-            <div className="title">{info.market}</div>
+            <Button color="info" onClick={this.onClickCoinSelect} >{info.market}</Button>
             <div className="line"></div>
             <div>
-              <Button bsStyle="primary" onClick={this.onClickCoinSelect} id={info.market+ "_button"} >{info.market}</Button>
-  
               <div className="sellMarketText">{parseOrderbook.buy.market} ASK</div>
               <div className="sellMarketText">₩{parseOrderbook.buy.minAsk} / {modifyValues(parseOrderbook.buy.volume)} {info.market}</div>
   
@@ -128,44 +152,100 @@ class RenderCoinInfo extends Component {
   }
 }
 
-function RenderOrdersendButton(orderinfo) {
-  function onClickButton() {
-    console.log("BUY");
+
+class RenderOrdersendButton extends Component {
+
+  static propTypes = {
+    onRef: PropTypes.func,
   }
 
-  const ordersendArea = orderinfo? (
-    <div>
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
 
-      <div className="ordersendcard orange">
-        <div className="title">BUY</div>
-        <div>
-          <Input name="buy_price" id="buy_price" placeholder="price" /> <br />
-          <Input name="volume" id="volume" placeholder="volume" /> <br />
-          <Button onClick={onClickButton}>BUY</Button>
+  componentDidMount() {
+    this.props.onRef(this)
+  }
+  componentWillUnmount() {
+    this.props.onRef(undefined)
+  }
+
+  onClickBuy = () => {
+    const {price, volume} = this.state;
+    console.log(price, volume)
+  }
+
+  onClickSell = () => {
+    console.log(2)
+  }
+
+  getInformations = (orderbook, marketBalance, coin) => {
+    // let userInfos = JSON.parse(marketBalance);
+    console.log(orderbook);
+    _.map(marketBalance, (values , coin) => {
+      console.log(coin, values);
+    });
+    
+    // const valPrice = orderbook.orderbookArr[0].market;
+    // const valVolume = orderbook.orderbookArr[0].market+"178236712";
+    
+    // this.setState({
+    //   price:valPrice,
+    //   volume: valVolume,
+    // })
+  }
+
+  state = { 
+    price:0,
+    volume:0
+  }
+
+  render() {
+    const {orderinfo} = this.props;
+    const {onClickBuy, onClickSell} = this;
+    const {price, volume} = this.state;
+
+    let orderbookButton = orderinfo? (
+      <div>
+  
+        <div className="ordersendcard orange">
+          <div className="title">BUY</div>
+          <div>
+            <Input name="buy_price" id="buy_price" placeholder="price" value={price} onChange={(e)=> this.setState({price:e.target.value})}/> <br />
+            <Input name="volume" id="volume" placeholder="volume" value={volume}/> <br />
+            <Button onClick={onClickBuy}>BUY</Button>
+          </div>
         </div>
-      </div>
-
-      <div className="ordersendcard orange">
-        <div className="title">ARBITRAGE</div>
-        <div>
-          <Button onClick={onClickButton}>BUY && SELL</Button>
-
+  
+        <div className="ordersendcard orange">
+          <div className="title">ARBITRAGE</div>
+          <div>
+            <Button onClick={onClickSell}>BUY && SELL</Button>
+  
+          </div>
         </div>
-      </div>
-
-      <div className="ordersendcard orange">
-        <div className="title">SELL</div>
-        <div>
-          <Input name="price" id="price" placeholder="price" /> <br />
-          <Input name="volume" id="volume" placeholder="volume" /> <br />
-          <Button onClick={onClickButton}>SELL</Button>
+  
+        <div className="ordersendcard orange">
+          <div className="title">SELL</div>
+          <div>
+            <Input name="price" id="price" placeholder="price" /> <br />
+            <Input name="volume" id="volume" placeholder="volume" /> <br />
+            <Button onClick={onClickSell}>SELL</Button>
+          </div>
         </div>
+  
       </div>
+    ) : null;
 
-    </div>
-  ) : null;
+    return (
+      <Fragment>
+        {orderbookButton}
+      </Fragment>
 
-  return ordersendArea;
+    )
+  }
 }
 
 function RenderOrderbookCard({orderbook}) {
@@ -217,7 +297,7 @@ function RenderArbitrageCard({orderbook}) {
   const orderbookArea = orderbook? (
     
     orderbook.map((info, index) => {
-      let parseOrderbook = JSON.parse(info.orderbook);
+      let parseOrderbook = (info.orderbook);
       let askVol = Number(parseOrderbook.buy.volume);
       let bidVol = Number(parseOrderbook.sell.volume);
 
