@@ -17,6 +17,8 @@ class Arbitrage extends Component {
     super(props);
     this.state = {
     };
+    this.coinList   = ['BTC', 'ETH', 'EOS', 'XRP', 'ZRX'];
+    this.marketList = ['UPBIT', 'BITHUMB', 'COINONE', 'GOPAX', 'CASHIEREST', 'KORBIT'];
   }
 
 
@@ -42,10 +44,33 @@ class Arbitrage extends Component {
 
   onSocketOpen = () => {
     const getSubscribeCoin = sessionStorage.getItem('arbitrabe_subscribe');
+    let toSetStorage = {};
 
     let subscribe = {
-      channel  : "Arbitrage",
-      sub_coin : getSubscribeCoin
+      channel  : "Arbitrage"
+    }
+
+    if(!getSubscribeCoin) {
+
+      this.coinList.map(coin => {
+        let coinObj = {
+          askmarket : [],
+          bidmarket : []
+        };
+  
+        this.marketList.map(market => {
+          coinObj.askmarket.push(market);
+          coinObj.bidmarket.push(market);
+  
+        });
+        toSetStorage[coin] = coinObj;
+      });
+
+      subscribe.sub_coin = JSON.stringify(toSetStorage);
+    }
+    else {
+      subscribe.sub_coin = getSubscribeCoin;
+
     }
 
     this.socket.send(JSON.stringify(subscribe));

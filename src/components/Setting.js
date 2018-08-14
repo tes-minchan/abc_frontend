@@ -12,15 +12,39 @@ class Setting extends Component {
   constructor(props) {
     super(props);
 
-    this.coinList = ['BTC', 'ETH', 'EOS', 'XRP', 'ZRX'];
+    this.coinList   = ['BTC', 'ETH', 'EOS', 'XRP', 'ZRX'];
     this.marketList = ['UPBIT', 'BITHUMB', 'COINONE', 'GOPAX', 'CASHIEREST', 'KORBIT'];
 
     const toSetState = {};
+    const getSubscribeCoin = JSON.parse(sessionStorage.getItem('arbitrabe_subscribe'));
 
     this.coinList.map(coin => {
       this.marketList.map(market => {
-        toSetState[`ask-${coin}-${market}-switch`] = true;
-        toSetState[`bid-${coin}-${market}-switch`] = true;
+        if(getSubscribeCoin) {
+          toSetState[`ask-${coin}-${market}-switch`] = false;
+          toSetState[`bid-${coin}-${market}-switch`] = false;
+
+          getSubscribeCoin[coin].askmarket.map(item => {
+            if(item === market) {
+              toSetState[`ask-${coin}-${market}-switch`] = true;
+              return;
+            }
+          });
+
+          getSubscribeCoin[coin].bidmarket.map(item => {
+            if(item === market) {
+              toSetState[`bid-${coin}-${market}-switch`] = true;
+              return;
+            }
+          });
+
+
+        }
+        else {
+          toSetState[`ask-${coin}-${market}-switch`] = true;
+          toSetState[`bid-${coin}-${market}-switch`] = true;
+        }
+        
       })
     });
 
