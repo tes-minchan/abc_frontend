@@ -1,0 +1,59 @@
+
+.marketcard {
+  margin: 3px;
+  color: #F2EEE9;
+  float: left;
+  position: relative;
+  width: 19%;
+  min-width: 250px;
+  min-height: 30px;
+
+}
+.marketcard .line {
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  margin-top: 1px;
+  padding: 6px 10px 0;
+}
+
+.marketcard h5 {
+  font-size: 14px;
+  text-align: right;
+}
+
+
+.marketcard .valuetitle {
+  display: inline;
+  font-size: 14px;
+  padding: 0px 0px 0;
+  text-transform: uppercase;
+  color: black; 
+  float : left;
+
+}
+
+.marketcard .title {
+  display: inline-block;
+  font-size: 15px;
+  padding: 0px 10px 0;
+  text-transform: uppercase;
+  color: black;
+}
+
+.marketcard.orange {
+  border: 5px solid #C7922C;
+  border-radius: 5px;
+  background-color: #C7922C;
+}
+.marketcard.red {
+  border: 5px solid #BF4D24;
+  border-radius: 5px;
+  background-color: #BF4D24;
+}
+
+.marketcontainer {
+  margin: 0 auto;
+  padding: 10px;
+  max-width: 1600px;
+  max-height : 200px;
+  text-align: center;
+}

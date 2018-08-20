@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import Header from 'components/Header';
 import MarketInfo from 'components/MarketInfo';
 
-import './Arbitrage.css';
+// import './Arbitrage.css';
 import _ from 'underscore';
 import * as Api from 'lib/api';
 
@@ -22,23 +22,25 @@ class Arbitrage extends Component {
   }
 
 
-  _getMessage = (message) => {
+  onSocketMessage = (message) => {
     let getMessage    = JSON.parse(message);
 
-    let orderbookArr = [];
+    console.log(getMessage);
 
-    _.map(getMessage.market,(item,index) => {
-      let orderbook = {
-        market : item,
-        orderbook : getMessage.data[index]
-      }
+    // let orderbookArr = [];
 
-      orderbookArr.push(orderbook);
-    })
+    // _.map(getMessage.market,(item,index) => {
+    //   let orderbook = {
+    //     market : item,
+    //     orderbook : getMessage.data[index]
+    //   }
 
-    this.setState({
-      orderbookArr
-    })
+    //   orderbookArr.push(orderbook);
+    // })
+
+    // this.setState({
+    //   orderbookArr
+    // })
     
   }
 
@@ -47,7 +49,7 @@ class Arbitrage extends Component {
     let toSetStorage = {};
 
     let subscribe = {
-      channel  : "Arbitrage"
+      channel  : "getmarketinfo"
     }
 
     if(!getSubscribeCoin) {
@@ -80,7 +82,7 @@ class Arbitrage extends Component {
     this.socket = new WebSocket('ws://localhost:3600');
     // this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
-    this.socket.onmessage = (m) => this._getMessage(m.data);
+    this.socket.onmessage = (m) => this.onSocketMessage(m.data);
   }
 
   clickCoinSelect = (coin) => {

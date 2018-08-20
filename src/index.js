@@ -7,7 +7,7 @@ import Signup from 'components/Signup'
 import Signin from 'components/Signin';
 import BTCKRW from 'components/currency/BTCKRW';
 import ETHKRW from 'components/currency/ETHKRW';
-import Arbitrage from 'components/Arbitrage';
+import Arbitrage from 'components/Arbitrage2';
 import Setting from 'components/Setting';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
