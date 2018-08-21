@@ -53,7 +53,8 @@ class Arbitrage extends Component {
 
         // subscribe all market.
         let subscribe = {
-          channel  : "update"
+          channel   : "update",
+          subscribe : subscribe_coin
         }
         this.socket.send(JSON.stringify(subscribe));
       }
