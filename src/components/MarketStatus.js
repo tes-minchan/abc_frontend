@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from 'react';
-
 import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
-
 import './MarketStatus.css';
 
 
@@ -18,10 +16,21 @@ class MarketStatus extends Component {
 
     const marketStatusArea = this.props.marketStatus? (
       this.props.marketStatus.map(marketInfo => {
-        const status = marketInfo.status === 'true' ? 'marketcard orange' : 'marketcard red';
+        const statusIcon = marketInfo.status === 'true' ? (
+          <div class="demo-up">
+            <span class="server-status" type="up"></span>
+          </div>
+        ) 
+        : (
+          <div class="demo-down">
+            <span class="server-status" type="down"></span>
+          </div>
+        );
+
         return(
-          <div className={status}>
-            <div className="title">{marketInfo.market}</div>
+          <div className="marketcard darkgray">
+              <span>{marketInfo.market}</span>
+              {statusIcon}
           </div>
         )
       })

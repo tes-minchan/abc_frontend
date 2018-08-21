@@ -36,7 +36,7 @@
   font-size: 15px;
   padding: 0px 10px 0;
   text-transform: uppercase;
-  color: black;
+  color: white;
 }
 
 .marketcard.orange {
@@ -45,10 +45,21 @@
   background-color: #C7922C;
 }
 .marketcard.red {
-  border: 5px solid #BF4D24;
   border-radius: 5px;
-  background-color: #BF4D24;
 }
+
+.marketcard.darkgray {
+  border: 5px solid #141412;
+  border-radius: 5px;
+  background-color: #141412;
+}
+.marketcard.medgray {
+  border: 5px solid #2C3E50;
+  border-radius: 5px;
+  background-color: #2C3E50;
+}
+
+
 
 .marketcontainer {
   margin: 0 auto;
@@ -56,4 +67,80 @@
   max-width: 1600px;
   max-height : 200px;
   text-align: center;
+}
+
+
+/** Server status css **/
+.server-status {
+  left: 10px;
+  top: 50%;
+  margin-left: 0px;
+  margin-top: -5px;
+  position: absolute;
+  vertical-align: middle;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.server-status::before,
+.server-status::after {
+  left: 0;
+  top: 50%;
+  margin-left: -1px;
+  margin-top: -6px;
+  position: absolute;
+  vertical-align: middle;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.server-status[type="up"],
+.server-status[type="up"]::before,
+.server-status[type="up"]::after {
+  background: #2ECC71;
+}
+.server-status[type="down"],
+.server-status[type="down"]::before,
+.server-status[type="down"]::after {
+  background: #E74C3C;
+}
+.server-status[type="slow"],
+.server-status[type="slow"]::before,
+.server-status[type="slow"]::after {
+  background: #F1C40F;
+}
+
+.server-status::before {
+  content: "";
+  animation: bounce 1.5s infinite;
+}
+.server-status::after {
+  content: "";
+  animation: bounce 1.5s -0.4s infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    -webkit-transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes bounce {
+  0% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    -webkit-transform: scale(2);
+    opacity: 0;
+  }
 }

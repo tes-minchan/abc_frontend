@@ -15,3 +15,27 @@
   text-align: center;
 
 }
+
+.settingCard {
+  margin: 3px;
+  color: #F2EEE9;
+  float: left;
+  position: relative;
+  width: 16%;
+  min-width: 100px;
+  min-height: 140px;
+}
+
+.settingContainer {
+  margin: 0 auto;
+  padding: 10px;
+  text-align: center;
+}
+.settingCard-list {
+  width: 80%;
+}
+.settingCard.darkgray {
+  border: 5px solid #42403C;
+  border-radius: 5px;
+  background-color: #42403C;
+}

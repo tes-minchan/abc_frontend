@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
 
-// import './Arbitrage2.css';
+import './Arbitrage2.css';
 
 import _ from 'underscore';
 import * as Api from 'lib/api';
@@ -16,6 +16,9 @@ class Arbitrage extends Component {
     super(props);
     this.state = {
     };
+
+    this.userSubscribeCoin = sessionStorage.getItem('subsCoinList')? sessionStorage.getItem('subsCoinList') : null;
+
   }
 
 
@@ -23,15 +26,59 @@ class Arbitrage extends Component {
     let getMessage = JSON.parse(message);
 
     if(getMessage.type === 'init') {
-      this.setState({
-        coinList : getMessage.coinList,
-        marketList : getMessage.marketList 
-      });
 
-      let subscribe = {
-        channel  : "update"
+      if(!this.userSubscribeCoin) {
+        let sub_coinlist = getMessage.coinList.map(coin => {
+          let sub = {
+            name : coin.name,
+            sub_market : coin.support_market,
+            sub_status : []
+          }
+  
+          // Default coin subscribe status set to true.
+          coin.support_market.forEach(market => {
+            sub.sub_status.push(true);
+          })
+  
+          return sub;
+        });
+
+        sessionStorage.setItem('subsCoinList',JSON.stringify(sub_coinlist));
+
+        // subscribe all market.
+        let subscribe = {
+          channel  : "update"
+        }
+        this.socket.send(JSON.stringify(subscribe));
       }
-      this.socket.send(JSON.stringify(subscribe));
+      else {
+        let getSessionSubsCoin = JSON.parse(sessionStorage.getItem('subsCoinList'));
+
+        let subscribe = {
+          channel  : "update",
+        }
+
+        subscribe['subscribe'] = getSessionSubsCoin.map(coin => {
+          let coinsubs = {
+            name : coin.name,
+            support_market : []
+          }
+
+          coin.sub_status.forEach((subs_status, index) => {
+            if(subs_status) {
+              coinsubs.support_market.push(coin.sub_market[index])
+            }
+          });
+
+          coinsubs['count'] = coinsubs.support_market.length;
+          return coinsubs;
+
+        });
+        
+        this.socket.send(JSON.stringify(subscribe));
+      }
+      
+
     }
     else if(getMessage.type === 'update') {
       this.setState({
@@ -76,10 +123,10 @@ class Arbitrage extends Component {
         <Header />
         <MarketStatus marketStatus = {this.state.status}/>
         <div className="container card-list">
-          <RenderCoinInfo orderbook={this.state.orderbook} index = {5} />
-          <RenderCoinInfo orderbook={this.state.orderbook} index = {4} />
-          <RenderCoinInfo orderbook={this.state.orderbook} index = {3} />
-          <RenderCoinInfo orderbook={this.state.orderbook} index = {2} />
+          <RenderCoinInfo orderbook={this.state.orderbook} count = {5} />
+          <RenderCoinInfo orderbook={this.state.orderbook} count = {4} />
+          <RenderCoinInfo orderbook={this.state.orderbook} count = {3} />
+          <RenderCoinInfo orderbook={this.state.orderbook} count = {2} />
 
         </div>
       </Fragment>
@@ -114,7 +161,7 @@ class RenderCoinInfo extends Component {
 
     const orderbookArea = this.props.orderbook? (
       this.props.orderbook.map((info, index) => {
-        if(this.props.index === info.COUNT) {
+        if(this.props.count === info.COUNT) {
 
           let parseOrderbook = info;
           let askPrice = Number(parseOrderbook.ASK.minAsk);
