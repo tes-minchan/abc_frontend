@@ -1,17 +1,35 @@
 import React, { Component, Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
+
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import Header from 'components/Header';
 import './Signin.css';
 import * as Api from 'lib/api';
+
 
 class Login extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      modalIsOpen: false
+
     };
   }
+
+  openModal= () => {
+    this.setState({modalIsOpen: true});
+  }
+ 
+  afterOpenModal= () => {
+    // references are now sync'd and can be accessed.
+    this.subtitle.style.color = '#f00';
+  }
+ 
+  closeModal= () => {
+    this.setState({modalIsOpen: false});
+  }
+
 
   onChange = (id) => {
     return (e) => {

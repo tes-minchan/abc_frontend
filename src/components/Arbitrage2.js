@@ -28,22 +28,28 @@ class Arbitrage extends Component {
     if(getMessage.type === 'init') {
 
       if(!this.userSubscribeCoin) {
-        let sub_coinlist = getMessage.coinList.map(coin => {
-          let sub = {
+        let subscribe_coin = getMessage.coinList.map(coin => {
+          let subscribe = {
             name : coin.name,
-            sub_market : coin.support_market,
-            sub_status : []
+            ASK : {
+              support_market : coin.support_market,
+              sub_status : []
+            },
+            BID : {
+              support_market : coin.support_market,
+              sub_status : []
+            }
           }
-  
+
           // Default coin subscribe status set to true.
           coin.support_market.forEach(market => {
-            sub.sub_status.push(true);
-          })
+            subscribe.ASK.sub_status.push(true);
+            subscribe.BID.sub_status.push(true);
+          });
   
-          return sub;
+          return subscribe;
         });
-
-        sessionStorage.setItem('subsCoinList',JSON.stringify(sub_coinlist));
+        sessionStorage.setItem('subsCoinList',JSON.stringify(subscribe_coin));
 
         // subscribe all market.
         let subscribe = {
@@ -52,6 +58,7 @@ class Arbitrage extends Component {
         this.socket.send(JSON.stringify(subscribe));
       }
       else {
+
         let getSessionSubsCoin = JSON.parse(sessionStorage.getItem('subsCoinList'));
 
         let subscribe = {
@@ -59,25 +66,42 @@ class Arbitrage extends Component {
         }
 
         subscribe['subscribe'] = getSessionSubsCoin.map(coin => {
-          let coinsubs = {
+
+          let subscrieb_coin = {
             name : coin.name,
-            support_market : []
+            ASK : {
+              support_market : [],
+              count      : 0
+            },
+            BID : {
+              support_market : [],
+              count      : 0
+            }
           }
 
-          coin.sub_status.forEach((subs_status, index) => {
-            if(subs_status) {
-              coinsubs.support_market.push(coin.sub_market[index])
+          coin.ASK.sub_status.forEach((check, index) => {
+            if(check) {
+              subscrieb_coin.ASK.support_market.push(coin.ASK.support_market[index]);
             }
           });
 
-          coinsubs['count'] = coinsubs.support_market.length;
-          return coinsubs;
+          coin.BID.sub_status.forEach((check, index) => {
+            if(check) {
+              subscrieb_coin.BID.support_market.push(coin.BID.support_market[index]);
+            }
+          });
+
+          subscrieb_coin.ASK.count = subscrieb_coin.ASK.support_market.length;
+          subscrieb_coin.BID.count = subscrieb_coin.BID.support_market.length;
+
+          return subscrieb_coin;
 
         });
-        
         this.socket.send(JSON.stringify(subscribe));
+
       }
-      
+
+
 
     }
     else if(getMessage.type === 'update') {
@@ -123,10 +147,7 @@ class Arbitrage extends Component {
         <Header />
         <MarketStatus marketStatus = {this.state.status}/>
         <div className="container card-list">
-          <RenderCoinInfo orderbook={this.state.orderbook} count = {5} />
-          <RenderCoinInfo orderbook={this.state.orderbook} count = {4} />
-          <RenderCoinInfo orderbook={this.state.orderbook} count = {3} />
-          <RenderCoinInfo orderbook={this.state.orderbook} count = {2} />
+          <RenderCoinInfo orderbook={this.state.orderbook} />
 
         </div>
       </Fragment>
@@ -147,8 +168,8 @@ class RenderCoinInfo extends Component {
   }
 
   onClickCoinSelect = (e) => {
-    const {onClickBtn} = this.props;
-    onClickBtn(e.target.innerHTML)
+    console.log(e.target.id)
+
   }
 
   render() {
@@ -161,8 +182,6 @@ class RenderCoinInfo extends Component {
 
     const orderbookArea = this.props.orderbook? (
       this.props.orderbook.map((info, index) => {
-        if(this.props.count === info.COUNT) {
-
           let parseOrderbook = info;
           let askPrice = Number(parseOrderbook.ASK.minAsk);
           let bidPrice = Number(parseOrderbook.BID.maxBid);
@@ -172,15 +191,15 @@ class RenderCoinInfo extends Component {
           return (
             <Fragment>
               <div className="card darkgray" key = {index}>
-                <Button color="info" onClick={this.onClickCoinSelect} >{info.COIN}[{info.COUNT}]</Button>
+                <Button color="info" onClick={this.onClickCoinSelect} id={info.COIN} >{info.COIN}</Button>
                 <div className="line"></div>
                 <div>
-                  <div className="sellMarketText">{parseOrderbook.ASK.market} ASK</div>
+                  <div className="sellMarketText">{parseOrderbook.ASK.market} ASK [{info.ASK_MARKET_COUNT}]</div>
                   <div className="sellMarketText">₩{parseOrderbook.ASK.minAsk} / {modifyValues(parseOrderbook.ASK.volume)} {info.market}</div>
       
                   <div className="value">₩{modifyValues(marketGap)}</div>
       
-                  <div className="buyMarketText">{parseOrderbook.BID.market} BID</div>
+                  <div className="buyMarketText">{parseOrderbook.BID.market} BID [{info.BID_MARKET_COUNT}]</div>
                   <div className="buyMarketText">₩{parseOrderbook.BID.maxBid} / {modifyValues(parseOrderbook.BID.volume)} {info.market} </div>
       
                 </div>
@@ -188,7 +207,6 @@ class RenderCoinInfo extends Component {
               </div>
             </Fragment>
           )
-        }
         
       })    
     ) : null;

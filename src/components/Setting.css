@@ -23,7 +23,30 @@
   position: relative;
   width: 16%;
   min-width: 100px;
-  min-height: 140px;
+  min-height: 310px;
+}
+
+.settingCard_title {
+  color : white;
+  font-size: 14px;
+}
+
+.settingCard_coin {
+  color : white;
+  font-size: 12px;
+}
+
+
+.settingCard_BID {
+  color : tomato;
+  text-align: left;
+  font-size: 13px;
+
+}
+.settingCard .line {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 1px;
+  padding: 6px 10px 0;
 }
 
 .settingContainer {
