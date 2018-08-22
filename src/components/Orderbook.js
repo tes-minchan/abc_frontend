@@ -35,8 +35,7 @@ class Orderbook extends Component {
   onSocketMessage = (message) => {
     let parseJson = JSON.parse(message);
 
-    if(parseJson) {
-
+    if(parseJson.ASK && parseJson.BID) {
       let askPrice = Number(parseJson.ASK[0].price);
       let bidPrice = Number(parseJson.BID[0].price);
 
@@ -63,8 +62,8 @@ class Orderbook extends Component {
 
 
   componentDidMount() {
-    this.socket = new WebSocket('ws://localhost:3600');
-    // this.socket = new WebSocket('ws://13.125.2.107:3600');
+    //this.socket = new WebSocket('ws://localhost:3600');
+    this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this.onSocketMessage(m.data);
   }
