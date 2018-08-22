@@ -138,7 +138,7 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    //this.socket = new WebSocket('ws://localhost:3600');
+    // this.socket = new WebSocket('ws://localhost:3600');
     this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this.onSocketMessage(m.data);
