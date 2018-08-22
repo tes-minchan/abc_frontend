@@ -65,6 +65,9 @@ class Header extends Component {
     ) : (
       <Fragment>
         <NavItem>
+          <NavLink href="/Orderbook" >Orderbook</NavLink>
+        </NavItem>
+        <NavItem>
           <NavLink href="/Setting" >Setting</NavLink>
         </NavItem>
         <NavItem>

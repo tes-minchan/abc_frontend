@@ -1,15 +1,28 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Input } from 'reactstrap';
-import Switch from "react-switch";
-
-import PropTypes from 'prop-types'
+import Modal from 'react-modal';
 
 import Header from 'components/Header';
-import MarketInfo from 'components/MarketInfo';
+import MarketStatus from 'components/MarketStatus';
 
-// import './Arbitrage.css';
+import './Arbitrage.css';
+
 import _ from 'underscore';
 import * as Api from 'lib/api';
+
+Modal.setAppElement('#root');
+const modalStyle = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)',
+    width                 : '500px',
+    height                : '500px'
+  }
+};
 
 class Arbitrage extends Component {
 
@@ -17,62 +30,108 @@ class Arbitrage extends Component {
     super(props);
     this.state = {
     };
-    this.coinList   = ['BTC', 'ETH', 'EOS', 'XRP', 'ZRX'];
-    this.marketList = ['UPBIT', 'BITHUMB', 'COINONE', 'GOPAX', 'CASHIEREST', 'KORBIT'];
+
+    this.userSubscribeCoin = sessionStorage.getItem('subsCoinList')? sessionStorage.getItem('subsCoinList') : null;
+
   }
 
 
   onSocketMessage = (message) => {
-    let getMessage    = JSON.parse(message);
+    let getMessage = JSON.parse(message);
 
-    console.log(getMessage);
+    if(getMessage.type === 'init') {
 
-    // let orderbookArr = [];
+      if(!this.userSubscribeCoin) {
+        let subscribe_coin = getMessage.coinList.map(coin => {
+          let subscribe = {
+            name : coin.name,
+            ASK : {
+              support_market : coin.support_market,
+              sub_status : []
+            },
+            BID : {
+              support_market : coin.support_market,
+              sub_status : []
+            }
+          }
 
-    // _.map(getMessage.market,(item,index) => {
-    //   let orderbook = {
-    //     market : item,
-    //     orderbook : getMessage.data[index]
-    //   }
+          // Default coin subscribe status set to true.
+          coin.support_market.forEach(market => {
+            subscribe.ASK.sub_status.push(true);
+            subscribe.BID.sub_status.push(true);
+          });
+  
+          return subscribe;
+        });
+        sessionStorage.setItem('subsCoinList',JSON.stringify(subscribe_coin));
 
-    //   orderbookArr.push(orderbook);
-    // })
+        // subscribe all market.
+        let subscribe = {
+          channel   : "update",
+          subscribe : subscribe_coin
+        }
+        this.socket.send(JSON.stringify(subscribe));
+      }
+      else {
 
-    // this.setState({
-    //   orderbookArr
-    // })
-    
+        let getSessionSubsCoin = JSON.parse(sessionStorage.getItem('subsCoinList'));
+
+        let subscribe = {
+          channel  : "update",
+        }
+
+        subscribe['subscribe'] = getSessionSubsCoin.map(coin => {
+
+          let subscrieb_coin = {
+            name : coin.name,
+            ASK : {
+              support_market : [],
+              count      : 0
+            },
+            BID : {
+              support_market : [],
+              count      : 0
+            }
+          }
+
+          coin.ASK.sub_status.forEach((check, index) => {
+            if(check) {
+              subscrieb_coin.ASK.support_market.push(coin.ASK.support_market[index]);
+            }
+          });
+
+          coin.BID.sub_status.forEach((check, index) => {
+            if(check) {
+              subscrieb_coin.BID.support_market.push(coin.BID.support_market[index]);
+            }
+          });
+
+          subscrieb_coin.ASK.count = subscrieb_coin.ASK.support_market.length;
+          subscrieb_coin.BID.count = subscrieb_coin.BID.support_market.length;
+
+          return subscrieb_coin;
+
+        });
+        this.socket.send(JSON.stringify(subscribe));
+
+      }
+
+
+
+    }
+    else if(getMessage.type === 'update') {
+      this.setState({
+        orderbook : getMessage.orderbook,
+        status    : getMessage.status
+      });
+    }
+        
   }
 
   onSocketOpen = () => {
-    const getSubscribeCoin = sessionStorage.getItem('arbitrabe_subscribe');
-    let toSetStorage = {};
 
     let subscribe = {
-      channel  : "getmarketinfo"
-    }
-
-    if(!getSubscribeCoin) {
-
-      this.coinList.map(coin => {
-        let coinObj = {
-          askmarket : [],
-          bidmarket : []
-        };
-  
-        this.marketList.map(market => {
-          coinObj.askmarket.push(market);
-          coinObj.bidmarket.push(market);
-  
-        });
-        toSetStorage[coin] = coinObj;
-      });
-
-      subscribe.sub_coin = JSON.stringify(toSetStorage);
-    }
-    else {
-      subscribe.sub_coin = getSubscribeCoin;
-
+      channel  : "init"
     }
 
     this.socket.send(JSON.stringify(subscribe));
@@ -97,22 +156,21 @@ class Arbitrage extends Component {
   }
 
   render() {
-    const {clickCoinSelect} = this;
+    
     return (
       <Fragment>
         <Header />
-        <MarketInfo onRef={ (el) => this.marketInfo = el}/>
+        <MarketStatus marketStatus = {this.state.status}/>
         <div className="container card-list">
-          <RenderCoinInfo orderbook={this.state.orderbookArr} onClickBtn={clickCoinSelect}/>
-          {/* <RenderOrderbookCard orderbook={this.state.orderbookArr}/> */}
-          <RenderArbitrageCard orderbook={this.state.orderbookArr}/>
-          <RenderOrdersendButton orderinfo ={"11"} onRef={ (el) => this.sendBtn = el} />
+          <RenderCoinInfo orderbook={this.state.orderbook} />
+
         </div>
       </Fragment>
 
     )
   }
 }
+
 
 class RenderCoinInfo extends Component {
 
@@ -123,14 +181,30 @@ class RenderCoinInfo extends Component {
     };
 
   }
-  handleChange = (checked) => {
-    this.setState({
-      checked : checked
-    })
+
+  componentDidMount() {
+
   }
+
+  openModal= (e) => {
+    this.setState({
+      modalIsOpen: true,
+      modalInfo : e.target.id,
+      volume : this.props.orderbook[0].ASK.volume
+    });
+  }
+ 
+  afterOpenModal= () => {
+    // references are now sync'd and can be accessed.
+    this.subtitle.style.color = '#f00';
+  }
+ 
+  closeModal= () => {
+    this.setState({modalIsOpen: false});
+  }
+
   onClickCoinSelect = (e) => {
-    const {onClickBtn} = this.props;
-    onClickBtn(e.target.innerHTML)
+    console.log(e.target.id)
   }
 
   render() {
@@ -140,247 +214,127 @@ class RenderCoinInfo extends Component {
   
       return modified;
     }
-  
+
     const orderbookArea = this.props.orderbook? (
-      
       this.props.orderbook.map((info, index) => {
-        let parseOrderbook = (info.orderbook);
-        let askPrice = Number(parseOrderbook.buy.minAsk);
-        let bidPrice = Number(parseOrderbook.sell.maxBid);
-  
-        let marketGap = bidPrice - askPrice;
+          let parseOrderbook = info;
+          let askPrice = Number(parseOrderbook.ASK.minAsk);
+          let bidPrice = Number(parseOrderbook.BID.maxBid);
+    
+          let marketGap = bidPrice - askPrice;
+          
+          return (
+            <Fragment>
+              <div className="card darkgray" key = {index}>
+                {/* MODAL TEST */}
+                  <Button color="info" onClick={this.openModal} id={info.COIN} >{info.COIN}</Button>
+                {/* MODAL TEST */}
+
+                <div className="line"></div>
+                <div>
+                  <div className="sellMarketText">{parseOrderbook.ASK.market} ASK [{info.ASK_MARKET_COUNT}]</div>
+                  <div className="sellMarketText">₩{parseOrderbook.ASK.minAsk} / {modifyValues(parseOrderbook.ASK.volume)} {info.market}</div>
+      
+                  <div className="value">₩{modifyValues(marketGap)}</div>
+      
+                  <div className="buyMarketText">{parseOrderbook.BID.market} BID [{info.BID_MARKET_COUNT}]</div>
+                  <div className="buyMarketText">₩{parseOrderbook.BID.maxBid} / {modifyValues(parseOrderbook.BID.volume)} {info.market} </div>
+      
+                </div>
+                <RenderArbCoinInfo coinInfo = {parseOrderbook} />
+              </div>
+
+            </Fragment>
+          )
         
-        return (
-          <div className="card darkgray" key = {index}>
-            <Button color="info" onClick={this.onClickCoinSelect} >{info.market}</Button>
-            <div className="line"></div>
-            <div>
-              <div className="sellMarketText">{parseOrderbook.buy.market} ASK</div>
-              <div className="sellMarketText">₩{parseOrderbook.buy.minAsk} / {modifyValues(parseOrderbook.buy.volume)} {info.market}</div>
-  
-              <div className="value">₩{marketGap}</div>
-  
-              <div className="buyMarketText">{parseOrderbook.sell.market} BID</div>
-              <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} / {modifyValues(parseOrderbook.sell.volume)} {info.market} </div>
-  
-            </div>
-          </div>
-       
-        )
       })    
     ) : null;
 
     return (
       <Fragment>
         {orderbookArea}
+
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          style={modalStyle}
+          contentLabel="Example Modal"
+        >
+
+          <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.modalInfo}</h2>
+          <button onClick={this.closeModal}>close</button>
+          <div>{this.state.volume}</div>
+          <form>
+            <input />
+            <button>tab navigation</button>
+            <button>stays</button>
+            <button>inside</button>
+            <button>the modal</button>
+          </form>
+        </Modal>
       </Fragment>
 
     )
   }
 }
 
-
-class RenderOrdersendButton extends Component {
-
-  static propTypes = {
-    onRef: PropTypes.func,
+function RenderArbCoinInfo( {coinInfo}) {
+  if(!coinInfo) {
+    return;
   }
+  else {
+    let parseOrderbook = (coinInfo);
+    let askVol = Number(parseOrderbook.ASK.volume);
+    let bidVol = Number(parseOrderbook.BID.volume);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-    this.props.onRef(this)
-  }
-  componentWillUnmount() {
-    this.props.onRef(undefined)
-  }
-
-  onClickBuy = () => {
-    const {price, volume} = this.state;
-    console.log(price, volume)
-  }
-
-  onClickSell = () => {
-    console.log(2)
-  }
-
-  getInformations = (orderbook, marketBalance, coin) => {
-    // let userInfos = JSON.parse(marketBalance);
-    console.log(orderbook);
-    _.map(marketBalance, (values , coin) => {
-      console.log(coin, values);
-    });
+    let askPrice = Number(parseOrderbook.ASK.minAsk);
+    let bidPrice = Number(parseOrderbook.BID.maxBid);
     
-    // const valPrice = orderbook.orderbookArr[0].market;
-    // const valVolume = orderbook.orderbookArr[0].market+"178236712";
-    
-    // this.setState({
-    //   price:valPrice,
-    //   volume: valVolume,
-    // })
-  }
+    let minCoinVol = (askVol > bidVol) ? bidVol : askVol;
 
-  state = { 
-    price:0,
-    volume:0
-  }
+    // Fiat Benefit
+    let requiredFiatFunds = (askPrice*minCoinVol);
+    let fiatProfit = minCoinVol * (bidPrice - askPrice);
+    fiatProfit = fiatProfit;
 
-  render() {
-    const {orderinfo} = this.props;
-    const {onClickBuy, onClickSell} = this;
-    const {price, volume} = this.state;
+    // Crypto Coin Benefit
+    let requiredCoinFunds = (minCoinVol * bidPrice);
+    let coinProfit = (requiredCoinFunds/askPrice - minCoinVol);
 
-    let orderbookButton = orderinfo? (
-      <div>
-  
-        <div className="ordersendcard orange">
-          <div className="title">BUY</div>
-          <div>
-            <Input name="buy_price" id="buy_price" placeholder="price" value={price} onChange={(e)=> this.setState({price:e.target.value})}/> <br />
-            <Input name="volume" id="volume" placeholder="volume" value={volume}/> <br />
-            <Button onClick={onClickBuy}>BUY</Button>
-          </div>
-        </div>
-  
-        <div className="ordersendcard orange">
-          <div className="title">ARBITRAGE</div>
-          <div>
-            <Button onClick={onClickSell}>BUY && SELL</Button>
-  
-          </div>
-        </div>
-  
-        <div className="ordersendcard orange">
-          <div className="title">SELL</div>
-          <div>
-            <Input name="price" id="price" placeholder="price" /> <br />
-            <Input name="volume" id="volume" placeholder="volume" /> <br />
-            <Button onClick={onClickSell}>SELL</Button>
-          </div>
-        </div>
-  
-      </div>
-    ) : null;
+    // Common value.
+    let percentageProfit = (coinProfit/minCoinVol) * 100;
+    percentageProfit = percentageProfit;
+
+    // calculate values for visiual.
+    let digit = 4;
+    requiredCoinFunds = Math.round(requiredCoinFunds * Math.pow(10,digit)) / Math.pow(10,digit);
+    coinProfit = Math.round(coinProfit * Math.pow(10,digit)) / Math.pow(10,digit);
+    minCoinVol = Math.round(minCoinVol * Math.pow(10,digit)) / Math.pow(10,digit);
 
     return (
-      <Fragment>
-        {orderbookButton}
-      </Fragment>
+      <div className="card medgray">
+        {/* <div className="title">{info.market}</div> */}
+        <div className="line"></div>
+        <div className="profitTab1st">
+          <div className="profitTitle">Fiat Benefit</div>
+          <div className="benefit">Req. Funds : ₩ {Math.floor(requiredFiatFunds)}</div>
+          <div className="benefit">Profit     : ₩ {Math.floor(fiatProfit)}</div>
+          <div className="line"></div>
 
+          <div className="profitTitle">Coin Benefit</div>
+          <div className="benefit">Req. Funds : ₩ {Math.floor(requiredCoinFunds)}</div>
+          <div className="benefit">Profit     : {coinProfit} {parseOrderbook.COIN}</div>
+          <div className="line"></div>
+          <div className="common">Trade Vol : {minCoinVol} {parseOrderbook.COIN}</div>
+          <div className="common">Percentage : {Math.round(percentageProfit*100)/100}%</div>
+
+        </div>
+      </div>
     )
   }
-}
-
-function RenderOrderbookCard({orderbook}) {
-
-  const modifyValues = function(values) {
-    let modified = values * 10000;
-    modified = Math.round(modified) / 10000;
-
-    return modified;
-  }
-
-  const orderbookArea = orderbook? (
-    
-    orderbook.map((info, index) => {
-      let parseOrderbook = JSON.parse(info.orderbook);
-      let askPrice = Number(parseOrderbook.buy.minAsk);
-      let bidPrice = Number(parseOrderbook.sell.maxBid);
-
-      let marketGap = bidPrice - askPrice;
-      
-      return (
-        <div className="card darkgray" key = {index}>
-          <div className="title">{info.market}</div>
-          <div className="line"></div>
-          <div>
-            <Button bsStyle="primary">Select</Button>
-
-            <div className="sellMarketText">{parseOrderbook.buy.market} ASK</div>
-            <div className="sellMarketText">₩{parseOrderbook.buy.minAsk} / {modifyValues(parseOrderbook.buy.volume)} {info.market}</div>
-
-            <div className="value">₩{marketGap}</div>
-
-            <div className="buyMarketText">{parseOrderbook.sell.market} BID</div>
-            <div className="buyMarketText">₩{parseOrderbook.sell.maxBid} / {modifyValues(parseOrderbook.sell.volume)} {info.market} </div>
-
-          </div>
-        </div>
-     
-      )
-    })    
-  ) : null;
-
-  return orderbookArea;
 
 }
-
-function RenderArbitrageCard({orderbook}) {
-
-  const orderbookArea = orderbook? (
-    
-    orderbook.map((info, index) => {
-      let parseOrderbook = (info.orderbook);
-      let askVol = Number(parseOrderbook.buy.volume);
-      let bidVol = Number(parseOrderbook.sell.volume);
-
-      let askPrice = Number(parseOrderbook.buy.minAsk);
-      let bidPrice = Number(parseOrderbook.sell.maxBid);
-      
-      let minCoinVol = (askVol > bidVol) ? bidVol : askVol;
-
-      // Fiat Benefit
-      let requiredFiatFunds = (askPrice*minCoinVol);
-      let fiatProfit = minCoinVol * (bidPrice - askPrice);
-      fiatProfit = fiatProfit;
-
-      // Crypto Coin Benefit
-      let requiredCoinFunds = (minCoinVol * bidPrice);
-      let coinProfit = (requiredCoinFunds/askPrice - minCoinVol);
-
-      // Common value.
-      let percentageProfit = (coinProfit/minCoinVol) * 100;
-      percentageProfit = percentageProfit;
-
-      // calculate values for visiual.
-      let digit = 4;
-      requiredCoinFunds = Math.round(requiredCoinFunds * Math.pow(10,digit)) / Math.pow(10,digit);
-      coinProfit = Math.round(coinProfit * Math.pow(10,digit)) / Math.pow(10,digit);
-      minCoinVol = Math.round(minCoinVol * Math.pow(10,digit)) / Math.pow(10,digit);
-
-      return (
-        <div className="card medgray" key = {index}>
-          {/* <div className="title">{info.market}</div> */}
-          <div className="line"></div>
-          <div className="profitTab1st">
-            <div className="profitTitle">Fiat Benefit</div>
-            <div className="benefit">Req. Funds : ₩ {Math.floor(requiredFiatFunds)}</div>
-            <div className="benefit">Profit     : ₩ {Math.floor(fiatProfit)}</div>
-            <div className="line"></div>
-
-            <div className="profitTitle">Coin Benefit</div>
-            <div className="benefit">Req. Funds : ₩ {Math.floor(requiredCoinFunds)}</div>
-            <div className="benefit">Profit     : {coinProfit} {info.market}</div>
-            <div className="line"></div>
-            <div className="common">Trade Vol : {minCoinVol} {info.market}</div>
-            <div className="common">Percentage : {Math.round(percentageProfit*100)/100}%</div>
-
-          </div>
-        </div>
-     
-      )
-    })    
-  ) : null;
-
-  return orderbookArea;
-}
-
-
-
 
 export default Arbitrage;
 

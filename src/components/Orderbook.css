@@ -1,0 +1,44 @@
+.orderbook-table {
+  color : white;
+  text-align: center;
+  display: inline-block;
+  width : 600px;
+  
+  table-layout: fixed;
+}
+
+.orderbook-tbody td{
+  height: 5px;
+  padding-top : 2px;
+  padding-bottom : 2px;
+  font-weight: 10;
+  font-size: 12px;
+  color: whitesmoke;
+
+}
+.orderbook-tbody td:nth-child(1) {
+  color:aquamarine;
+}
+
+.orderbook-tbody td:nth-child(2) {
+  color:aquamarine;
+}
+
+
+.orderbook-content h3{
+  color: white;
+}
+
+.orderbook-select {
+  text-align: center;
+  
+}
+
+.orderbook-content {
+  text-align: center;
+}
+
+.orderbook-button {
+  padding : 10px;
+  margin : 10px;
+}

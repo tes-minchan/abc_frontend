@@ -7,8 +7,9 @@ import Signup from 'components/Signup'
 import Signin from 'components/Signin';
 import BTCKRW from 'components/currency/BTCKRW';
 import ETHKRW from 'components/currency/ETHKRW';
-import Arbitrage from 'components/Arbitrage2';
+import Arbitrage from 'components/Arbitrage';
 import Setting from 'components/Setting';
+import Orderbook from 'components/Orderbook';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ ReactDOM.render(
       <Route path="/ETHKRW"    component={ETHKRW} />
       <Route path="/Arbitrage" component={Arbitrage} />
       <Route path="/Setting" component={Setting} />
+      <Route path="/Orderbook" component={Orderbook} />
 
     </div>
   </Router>  
