@@ -1,10 +1,8 @@
 .orderbook-table {
   color : white;
   text-align: center;
-  display: inline-block;
   width : 600px;
-  
-  table-layout: fixed;
+
 }
 
 .orderbook-tbody td{
@@ -26,19 +24,38 @@
 
 
 .orderbook-content h3{
-  color: white;
+  color: black;
+  background-color: #42403C;
+  text-align: center;  
 }
 
 .orderbook-select {
   text-align: center;
-  
 }
 
 .orderbook-content {
-  text-align: center;
+  text-align: left;
 }
 
 .orderbook-button {
   padding : 10px;
   margin : 10px;
 }
+
+.gapText {
+  color : whitesmoke;
+
+}
+
+.gapNumber {
+  color : goldenrod;
+}
+
+.arbitrage-info {
+  color: #C7922C;
+  text-align: center;
+  font-size: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  height: 47px;
+}
+

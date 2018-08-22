@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Input } from 'reactstrap';
-import Modal from 'react-modal';
 
 import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
@@ -9,20 +8,6 @@ import './Arbitrage.css';
 
 import _ from 'underscore';
 import * as Api from 'lib/api';
-
-Modal.setAppElement('#root');
-const modalStyle = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)',
-    width                 : '500px',
-    height                : '500px'
-  }
-};
 
 class Arbitrage extends Component {
 
@@ -35,11 +20,10 @@ class Arbitrage extends Component {
 
   }
 
-
   onSocketMessage = (message) => {
     let getMessage = JSON.parse(message);
 
-    if(getMessage.type === 'init') {
+    if(getMessage.type === 'init_dashboard') {
 
       if(!this.userSubscribeCoin) {
         let subscribe_coin = getMessage.coinList.map(coin => {
@@ -67,7 +51,7 @@ class Arbitrage extends Component {
 
         // subscribe all market.
         let subscribe = {
-          channel   : "update",
+          channel   : "update_dashboard",
           subscribe : subscribe_coin
         }
         this.socket.send(JSON.stringify(subscribe));
@@ -77,7 +61,7 @@ class Arbitrage extends Component {
         let getSessionSubsCoin = JSON.parse(sessionStorage.getItem('subsCoinList'));
 
         let subscribe = {
-          channel  : "update",
+          channel  : "update_dashboard",
         }
 
         subscribe['subscribe'] = getSessionSubsCoin.map(coin => {
@@ -116,13 +100,10 @@ class Arbitrage extends Component {
 
       }
 
-
-
     }
-    else if(getMessage.type === 'update') {
+    else if(getMessage.type === 'update_dashboard') {
       this.setState({
-        orderbook : getMessage.orderbook,
-        status    : getMessage.status
+        orderbook : getMessage.orderbook
       });
     }
         
@@ -131,14 +112,14 @@ class Arbitrage extends Component {
   onSocketOpen = () => {
 
     let subscribe = {
-      channel  : "init"
+      channel  : "init_dashboard"
     }
 
     this.socket.send(JSON.stringify(subscribe));
   }
 
   componentDidMount() {
-    // this.socket = new WebSocket('ws://localhost:3600');
+    //this.socket = new WebSocket('ws://localhost:3600');
     this.socket = new WebSocket('ws://13.125.2.107:3600');
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this.onSocketMessage(m.data);
@@ -160,7 +141,7 @@ class Arbitrage extends Component {
     return (
       <Fragment>
         <Header />
-        <MarketStatus marketStatus = {this.state.status}/>
+        <MarketStatus />
         <div className="container card-list">
           <RenderCoinInfo orderbook={this.state.orderbook} />
 
@@ -210,7 +191,7 @@ class RenderCoinInfo extends Component {
   render() {
     const modifyValues = function(values) {
       let modified = values * 10000;
-      modified = Math.round(modified) / 10000;
+      modified = Math.floor(modified) / 10000;
   
       return modified;
     }
@@ -226,10 +207,6 @@ class RenderCoinInfo extends Component {
           return (
             <Fragment>
               <div className="card darkgray" key = {index}>
-                {/* MODAL TEST */}
-                  <Button color="info" onClick={this.openModal} id={info.COIN} >{info.COIN}</Button>
-                {/* MODAL TEST */}
-
                 <div className="line"></div>
                 <div>
                   <div className="sellMarketText">{parseOrderbook.ASK.market} ASK [{info.ASK_MARKET_COUNT}]</div>
@@ -253,26 +230,6 @@ class RenderCoinInfo extends Component {
     return (
       <Fragment>
         {orderbookArea}
-
-        <Modal
-          isOpen={this.state.modalIsOpen}
-          onAfterOpen={this.afterOpenModal}
-          onRequestClose={this.closeModal}
-          style={modalStyle}
-          contentLabel="Example Modal"
-        >
-
-          <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.modalInfo}</h2>
-          <button onClick={this.closeModal}>close</button>
-          <div>{this.state.volume}</div>
-          <form>
-            <input />
-            <button>tab navigation</button>
-            <button>stays</button>
-            <button>inside</button>
-            <button>the modal</button>
-          </form>
-        </Modal>
       </Fragment>
 
     )
@@ -296,7 +253,6 @@ function RenderArbCoinInfo( {coinInfo}) {
     // Fiat Benefit
     let requiredFiatFunds = (askPrice*minCoinVol);
     let fiatProfit = minCoinVol * (bidPrice - askPrice);
-    fiatProfit = fiatProfit;
 
     // Crypto Coin Benefit
     let requiredCoinFunds = (minCoinVol * bidPrice);
@@ -308,9 +264,9 @@ function RenderArbCoinInfo( {coinInfo}) {
 
     // calculate values for visiual.
     let digit = 4;
-    requiredCoinFunds = Math.round(requiredCoinFunds * Math.pow(10,digit)) / Math.pow(10,digit);
-    coinProfit = Math.round(coinProfit * Math.pow(10,digit)) / Math.pow(10,digit);
-    minCoinVol = Math.round(minCoinVol * Math.pow(10,digit)) / Math.pow(10,digit);
+    requiredCoinFunds = Math.floor(requiredCoinFunds * Math.pow(10,digit)) / Math.pow(10,digit);
+    coinProfit = Math.floor(coinProfit * Math.pow(10,digit)) / Math.pow(10,digit);
+    minCoinVol = Math.floor(minCoinVol * Math.pow(10,digit)) / Math.pow(10,digit);
 
     return (
       <div className="card medgray">
@@ -327,7 +283,7 @@ function RenderArbCoinInfo( {coinInfo}) {
           <div className="benefit">Profit     : {coinProfit} {parseOrderbook.COIN}</div>
           <div className="line"></div>
           <div className="common">Trade Vol : {minCoinVol} {parseOrderbook.COIN}</div>
-          <div className="common">Percentage : {Math.round(percentageProfit*100)/100}%</div>
+          <div className="common">Percentage : {Math.floor(percentageProfit*100)/100}%</div>
 
         </div>
       </div>
