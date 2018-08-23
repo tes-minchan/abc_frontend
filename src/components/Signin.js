@@ -1,27 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
-import Modal from 'react-modal';
 
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import Header from 'components/Header';
 import './Signin.css';
 import * as Api from 'lib/api';
 
-const customStyles = {
-  content : {
-    top                   : '30%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)',
-    width                 : '500px',
-    height                : '500px'
-  }
-};
-
-// Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
-Modal.setAppElement('#root');
 
 class Login extends Component {
 
@@ -112,30 +96,6 @@ class Login extends Component {
           </Form>
 
         </div> 
-
-        {/* modal test */}
-        <div>
-          <button onClick={this.openModal}>Open Modal</button>
-          <Modal
-            isOpen={this.state.modalIsOpen}
-            onAfterOpen={this.afterOpenModal}
-            onRequestClose={this.closeModal}
-            style={customStyles}
-            contentLabel="Example Modal"
-          >
-
-            <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
-            <button onClick={this.closeModal}>close</button>
-            <div>I am a modal</div>
-            <form>
-              <input />
-              <button>tab navigation</button>
-              <button>stays</button>
-              <button>inside</button>
-              <button>the modal</button>
-            </form>
-          </Modal>
-        </div>
       </Fragment>
 
     )

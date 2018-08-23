@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
 .orderbook-table {
   color : white;
   text-align: center;
@@ -60,3 +61,106 @@
   height: 47px;
 }
 
+
+/* ordersend button css */
+
+.ordersendText {
+  float: left;
+  color:white;
+  height: 38px;
+  font-size:15px;
+  padding-top : 4px;
+}
+
+.ordersend-input {
+  color:white;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight:500;
+  font-size: 18px;
+  border-radius: 5px;
+  line-height: 22px;
+  background-color: transparent;
+  border:1px solid white;
+  transition: all 0.3s;
+  padding: 13px;
+  margin-bottom: 8px;
+  width:150px;
+  height: 30px;
+  box-sizing: border-box;
+  outline:0;
+  float: right;
+}
+
+.ordersend-sell-button {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  width: 200px;
+  background:#CC6666;
+  border-radius:5px;
+  border:0;
+  cursor:pointer;
+  color:white;
+  font-size:20px;
+  transition: all 0.3s;
+  margin-top: 4px;
+  font-weight:700;
+  height: 40px;
+}
+.ordersend-sell-button:hover {
+  background:rgb(167, 46, 46);
+}
+
+.ordersend-buy-button {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  width: 200px;
+  background:rgb(59, 83, 150);
+  border-radius:5px;
+  border:0;
+  cursor:pointer;
+  color:white;
+  font-size:20px;
+  transition: all 0.3s;
+  margin-top: 4px;
+  font-weight:700;
+  height: 40px;
+}
+.ordersend-buy-button:hover {
+  background:rgb(34, 49, 88);
+}
+
+.ordersend-arb-button {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  width: 200px;
+  background:rgb(42, 128, 92);
+  border-radius:5px;
+  border:0;
+  cursor:pointer;
+  color:white;
+  font-size:20px;
+  transition: all 0.3s;
+  margin-top: 4px;
+  font-weight:700;
+  height: 40px;
+}
+.ordersend-arb-button:hover {
+  background: rgb(20, 59, 43);
+}
+
+.ordersend-container {
+  color : white;
+}
+.ordersend-balance {
+  color : gold;
+  float: left;
+}
+.ordersend-values { 
+  text-align: right;
+  /* float: right; */
+}
+
+
+.ordersend-invest-rate {
+  margin-left : 2px;
+  margin-right: 2px;
+  margin-top : 2px;
+  font-size: 14px;
+}

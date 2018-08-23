@@ -54,6 +54,9 @@ class Header extends Component {
     
       <Fragment>
         <NavItem>
+          <NavLink href="/Orderbook" >Orderbook</NavLink>
+        </NavItem>
+        <NavItem>
           <NavLink href="/Setting" >Setting</NavLink>
         </NavItem>
         <h4><Badge color="success" className="userid">{this.state.userid}</Badge></h4>

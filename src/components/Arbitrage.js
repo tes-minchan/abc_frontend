@@ -286,6 +286,7 @@ function RenderArbCoinInfo( {coinInfo}) {
           <div className="common">Percentage : {Math.floor(percentageProfit*100)/100}%</div>
 
         </div>
+
       </div>
     )
   }

@@ -50,13 +50,13 @@ class MarketStatus extends Component {
     const marketStatusArea = this.state.marketStatus? (
       this.state.marketStatus.map(marketInfo => {
         const statusIcon = marketInfo.status === 'true' ? (
-          <div class="demo-up">
-            <span class="server-status" type="up"></span>
+          <div className="demo-up">
+            <span className="server-status" type="up"></span>
           </div>
         ) 
         : (
-          <div class="demo-down">
-            <span class="server-status" type="down"></span>
+          <div className="demo-down">
+            <span className="server-status" type="down"></span>
           </div>
         );
 
