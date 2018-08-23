@@ -119,7 +119,7 @@ class Orderbook extends Component {
         coinBalance = Util.convertFloatDigit(coinBalance.available, 6);
         sellVolume = krwBalance / buy.price;
         sellVolume = sellVolume > tradeVolume ? tradeVolume : sellVolume;
-        sellVolume = sellVolume > sell.volume ? sell.volume : sellVolume;
+        sellVolume = sellVolume > coinBalance ? coinBalance : sellVolume;
       }
     }
 
