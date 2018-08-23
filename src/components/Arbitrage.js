@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Input } from 'reactstrap';
 
 import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
@@ -207,7 +206,9 @@ class RenderCoinInfo extends Component {
           return (
             <Fragment>
               <div className="card darkgray" key = {index}>
+                <span style={{fontSize:"14spx"}}>{info.COIN}</span>
                 <div className="line"></div>
+
                 <div>
                   <div className="sellMarketText">{parseOrderbook.ASK.market} ASK [{info.ASK_MARKET_COUNT}]</div>
                   <div className="sellMarketText">₩{parseOrderbook.ASK.minAsk} / {modifyValues(parseOrderbook.ASK.volume)} {info.market}</div>
@@ -270,7 +271,6 @@ function RenderArbCoinInfo( {coinInfo}) {
 
     return (
       <div className="card medgray">
-        {/* <div className="title">{info.market}</div> */}
         <div className="line"></div>
         <div className="profitTab1st">
           <div className="profitTitle">Fiat Benefit</div>
