@@ -5,6 +5,7 @@ import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
 
 import './Arbitrage.css';
+import websocket from 'config';
 
 import _ from 'underscore';
 import * as Api from 'lib/api';
@@ -119,8 +120,7 @@ class Arbitrage extends Component {
   }
 
   componentDidMount() {
-    //this.socket = new WebSocket('ws://localhost:3600');
-    this.socket = new WebSocket('ws://13.125.2.107:3600');
+    this.socket = new WebSocket(websocket.URL);
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this.onSocketMessage(m.data);
   }

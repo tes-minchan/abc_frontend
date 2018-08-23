@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
 import './MarketStatus.css';
+import websocket from 'config';
 
 
 class MarketStatus extends Component {
@@ -35,8 +36,7 @@ class MarketStatus extends Component {
   }
 
   componentDidMount() {
-    //this.socket = new WebSocket('ws://localhost:3600');
-    this.socket = new WebSocket('ws://13.125.2.107:3600');
+    this.socket = new WebSocket(websocket.URL);
     this.socket.onopen = () => this.onSocketOpen()
     this.socket.onmessage = (m) => this.onSocketMessage(m.data);
   }
