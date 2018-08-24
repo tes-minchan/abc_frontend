@@ -149,16 +149,29 @@
   color : white;
 }
 .ordersend-balance {
-  color : gold;
   float: left;
 }
 .ordersend-values { 
+  color : gold;
   text-align: right;
-  /* float: right; */
 }
 
 
 .ordersend-invest-rate {
   margin : 5px 15px 5px auto;
   font-size: 14px;
+}
+
+.arbitrage-table-info{
+  color:white;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 500px;
+  
+}
+
+tr, td { 
+  border-top: 1px solid #444444;
+  border-collapse: collapse;
 }

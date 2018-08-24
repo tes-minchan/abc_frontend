@@ -283,14 +283,29 @@ class Orderbook extends Component {
     ) : null;
 
     const arbInfoArea = this.state.ARB_INFO? (
-      <div className="arbitrage-info">
-        <span style={{color:"#dfe6e9"}}> Fiat </span>
-          Req.funds : ₩ {this.state.ARB_INFO.fiat.benefit} Profit : ₩ {this.state.ARB_INFO.fiat.profit}
-        <span style={{color:"#dfe6e9"}}> Coin </span> 
-          Req.funds : ₩ {this.state.ARB_INFO.coin.benefit} Profit : {this.state.ARB_INFO.coin.profit} {this.state.currency}<br/>
-        <span style={{color:"#F79F1F"}}> {this.state.ARB_INFO.precentage}% </span>
-      </div>
+      <table className="arbitrage-table-info">
+        <tr>
+          <td style={{color:"#F79F1F"}}>{this.state.ARB_INFO.precentage}% </td>
+          <td>KRW</td>
+          <td>Coin</td>
 
+        </tr>
+        <tr>
+          <td>Req. Funds</td>
+          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.fiat.benefit}</td>
+          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.fiat.profit}</td>
+        </tr>
+        <tr>
+          <td>Profit</td>
+          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.coin.benefit} </td>
+          <td style={{color:"gold"}}>{this.state.ARB_INFO.coin.profit} {this.state.currency}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
     ) : null;
 
     const orderSendArea = (ordersendInfo) => {
