@@ -84,7 +84,7 @@ class Header extends Component {
 
     return (
       <Fragment>
-        <Navbar color="light" light expand="md">
+        <Navbar color="light" light expand="md" className="Header">
           <NavbarBrand href="/"><h3 className="text-success">ABC Project</h3></NavbarBrand>
           <Collapse  navbar>
             <Nav className="ml-auto" navbar>

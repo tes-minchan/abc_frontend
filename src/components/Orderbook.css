@@ -175,3 +175,8 @@ tr, td {
   border-top: 1px solid #444444;
   border-collapse: collapse;
 }
+
+.depth-chart {
+  margin-left: auto;
+  margin-right: auto;
+}

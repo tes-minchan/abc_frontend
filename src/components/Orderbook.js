@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Button, Container, Row, Col  } from 'reactstrap';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 
 import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
@@ -17,7 +19,8 @@ class Orderbook extends Component {
     this.state = {
       currency : "BTC",
       invest_rate : '1',
-      invest_curremcy : "KRW"
+      invest_curremcy : "KRW",
+      chart_data : []
     };
 
     this.orderbook_coin = ['BTC', 'ETH', 'EOS', 'BCH', 'BTG', 'ETC', 'XRP', 'ZRX', 'REP'];
@@ -149,6 +152,48 @@ class Orderbook extends Component {
 
   }
 
+  remove_duplicates_es6 = (arr) => {
+    let s = new Set(arr);
+    let it = s.values();
+    return Array.from(it);
+  }
+
+  createChartData = (orderbook) => {
+
+    let chartData = [];
+    let askOrderbook = {};
+    let bidOrderbook = {};
+
+    let toSetData = [];
+
+    orderbook.ASK.map(item => {
+      chartData.push(Number(item.price));
+      askOrderbook[item.price] = Number(item.volume);
+    });
+    orderbook.BID.map(item => {
+      chartData.push(Number(item.price));
+      bidOrderbook[item.price] = Number(item.volume);
+    });
+
+    chartData = chartData.sort(function(a, b) {
+      return a - b;
+    });
+
+    chartData = this.remove_duplicates_es6(chartData);
+
+    chartData.forEach(price => {
+      let data = {
+        name : price,
+        ASK  : askOrderbook[price] ? askOrderbook[price] : 0,
+        BID  : bidOrderbook[price] ? bidOrderbook[price] : 0
+      }
+      toSetData.push(data);
+    });
+
+    return toSetData;
+
+  }
+
   onSocketMessage = (message) => {
     let parseJson = JSON.parse(message);
 
@@ -182,14 +227,15 @@ class Orderbook extends Component {
 
         const ordersendInfo = this.calculateOrdesend(buyInfo, sellInfo);
 
+        const chartData = this.createChartData(orderbook);
+
         this.setState({
+          chart_data : chartData,
           ASK : ask_orderbook.reverse(),
           BID : orderbook.BID, 
           GAP : (bidPrice - askPrice),
           ARB_INFO  : arbInfo,
           ORDERSEND : ordersendInfo,
-          ORDERSEND_BUY  : buyInfo,
-          ORDERSEND_SELL : sellInfo,
 
         });
       }
@@ -385,6 +431,18 @@ class Orderbook extends Component {
         {/* arbitrage information */}
         {arbInfoArea}
         
+        <div className="depth-chart">
+          <AreaChart width={1800} height={200} data={this.state.chart_data ? this.state.chart_data : []}
+              >
+            <XAxis dataKey="name"/>
+            <YAxis/>
+            <Tooltip active={false}/>
+            <Area type='monotone' dataKey='ASK'  stroke='rgb(59, 83, 150)' fill='rgb(59, 83, 150)' />
+            <Area type='monotone' dataKey='BID'  stroke='#CC6666' fill='#CC6666' />
+          </AreaChart>
+        </div>
+
+
         <Container>
           <Row>
             <Col>
@@ -447,8 +505,10 @@ class Orderbook extends Component {
           </Row>
 
         </Container>
-        
+
         <Modal onRef={(ref)=>{this.test = ref}}/>
+
+
 
       </Fragment>
        
