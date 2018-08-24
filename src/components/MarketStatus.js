@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
 import './MarketStatus.css';
 import websocket from 'config';
 
@@ -11,9 +10,6 @@ class MarketStatus extends Component {
     super(props);
     this.state = {};
     
-    this.interval = setInterval(() => {
-      this.socket.send(JSON.stringify({channel : "market_status"}));
-    },1000);
   }
 
   
@@ -33,6 +29,11 @@ class MarketStatus extends Component {
     }
 
     this.socket.send(JSON.stringify(subscribe));
+
+    this.interval = setInterval(() => {
+      this.socket.send(JSON.stringify({channel : "market_status"}));
+    },1000);
+    
   }
 
   componentDidMount() {

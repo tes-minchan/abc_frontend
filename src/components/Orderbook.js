@@ -16,7 +16,7 @@ class Orderbook extends Component {
     super(props);
     this.state = {
       currency : "BTC",
-      invest_rate : '0.5',
+      invest_rate : '1',
       invest_curremcy : "KRW"
     };
 
@@ -284,14 +284,10 @@ class Orderbook extends Component {
 
     const arbInfoArea = this.state.ARB_INFO? (
       <div className="arbitrage-info">
-        <span style={{color:"#dfe6e9"}}> Fiat Req.funds : </span> 
-          ₩ {this.state.ARB_INFO.fiat.benefit} 
-        <span style={{color:"#dfe6e9"}}>  Profit : </span>
-          ₩ {this.state.ARB_INFO.fiat.profit}
-        <span style={{color:"#dfe6e9"}}> || Coin Req.funds : </span> 
-          ₩ {this.state.ARB_INFO.coin.benefit} 
-        <span style={{color:"#dfe6e9"}}>  Profit : </span>
-          {this.state.ARB_INFO.coin.profit} {this.state.currency}<br/>
+        <span style={{color:"#dfe6e9"}}> Fiat </span>
+          Req.funds : ₩ {this.state.ARB_INFO.fiat.benefit} Profit : ₩ {this.state.ARB_INFO.fiat.profit}
+        <span style={{color:"#dfe6e9"}}> Coin </span> 
+          Req.funds : ₩ {this.state.ARB_INFO.coin.benefit} Profit : {this.state.ARB_INFO.coin.profit} {this.state.currency}<br/>
         <span style={{color:"#F79F1F"}}> {this.state.ARB_INFO.precentage}% </span>
       </div>
 
@@ -308,7 +304,7 @@ class Orderbook extends Component {
             <Col>
               <div className="ordersend-container">
                 <p>
-                  <div >{ordersendInfo.buy_market}</div>
+                  <div style={{fontSize:"20px"}}>{ordersendInfo.buy_market}</div>
                   <div className="ordersend-balance">KRW Balance : </div> <div className="ordersend-values"> ₩ {ordersendInfo.krw_balance}</div>
                   <div className="ordersend-balance" >Req Funds : </div> <div className="ordersend-values"> ₩ {ordersendInfo.krw_funds}</div>
                 </p>
@@ -325,7 +321,7 @@ class Orderbook extends Component {
             <Col>
               <div className="ordersend-container">
                 <p>
-                  <div >{ordersendInfo.sell_market}</div>
+                  <div style={{fontSize:"20px"}}>{ordersendInfo.sell_market}</div>
                   <div className="ordersend-balance">Coin Balance : </div> <div className="ordersend-values"> {ordersendInfo.coin_balance} {this.state.currency} </div>
                   <div className="ordersend-balance" >Expt Funds : </div> <div className="ordersend-values"> ₩ {ordersendInfo.coin_funds} </div>
                 </p>
@@ -345,47 +341,6 @@ class Orderbook extends Component {
         )
       }
     }
-
-    const orderSendSellArea = (self) => {
-      const market = self.ORDERSEND_SELL ? self.ORDERSEND_SELL.market : null;
-      const coin   = self.currency ? self.currency : null;
-      const wallet = self.WALLET ? self.WALLET[market] : null;
-      const exptFunds = self.ARB_INFO ? self.ARB_INFO.coin.benefit : 0;
-      const minVolume = self.ARB_INFO ? self.ARB_INFO.tradeVol : 0;
-      let tradeVol     = 0;      
-      let coin_balance = 0;
-
-      if(wallet && wallet[coin]) {
-
-        coin_balance = Util.convertFloatDigit(wallet[coin].available, 6);
-        tradeVol = coin_balance > minVolume ? minVolume : coin_balance;
-        
-      }
-
-      return (
-        <Fragment>
-          <div className="ordersend-container">
-            <p>
-              <div >{self.ORDERSEND_SELL ? self.ORDERSEND_SELL.market : null}</div>
-              <div className="ordersend-balance">Coin Balance : </div> <div className="ordersend-values"> {coin_balance} {self.currency} </div>
-              <div className="ordersend-balance" >Expt Funds : </div> <div className="ordersend-values"> ₩ {exptFunds} </div>
-            </p>
-
-          </div>
-
-          <form className="ordersend-form">   
-            <span className="ordersendText">Price : </span>       
-            <input name="Price" type="text" className="ordersend-input" placeholder="Price" value={self.ORDERSEND_SELL? self.ORDERSEND_SELL.price : ""} />   
-            <span className="ordersendText">Volume : </span>    
-            <input name="Volume" type="text" className="ordersend-input" placeholder="Volume" value={tradeVol} />
-            <input type="submit" value="SELL" className="ordersend-sell-button"/>
-          </form>
-
-        </Fragment>
-
-      )
-    }
-
 
     return(
       <Fragment>

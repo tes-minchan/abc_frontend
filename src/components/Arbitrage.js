@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Button } from 'reactstrap';
 
 import Header from 'components/Header';
 import MarketStatus from 'components/MarketStatus';
@@ -206,7 +207,7 @@ class RenderCoinInfo extends Component {
           return (
             <Fragment>
               <div className="card darkgray" key = {index}>
-                <span style={{fontSize:"14spx"}}>{info.COIN}</span>
+                <Button className="coinselect" onClick={this.onClickCoinSelect} id={info.COIN} >{info.COIN}</Button>
                 <div className="line"></div>
 
                 <div>
