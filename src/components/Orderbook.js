@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Button, Container, Row, Col  } from 'reactstrap';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 
 import Header from 'components/Header';
@@ -25,7 +25,7 @@ class Orderbook extends Component {
 
     this.orderbook_coin = ['BTC', 'ETH', 'EOS', 'BCH', 'BTG', 'ETC', 'XRP', 'ZRX', 'REP'];
     this.chartCount     = 7;
-    this.orderbookCount = 11;
+    this.orderbookCount = 10;
   }
 
   onClickSelectCoin = (e) => {
@@ -153,23 +153,31 @@ class Orderbook extends Component {
 
   }
 
-
-
   createChartData = (orderbook) => {
 
     let chartData = [];
-    let askOrderbook = {};
-    let bidOrderbook = {};
-
     let toSetChartData = [];
+    let toSendChartData = [];
+    let accumVol = 0;
+    
 
-    orderbook.ASK.map(item => {
+    let askOrderbook = {};
+    orderbook.ASK.forEach(item => {
+      accumVol += Number(item.volume);
       chartData.push(Number(item.price));
-      askOrderbook[item.price] = Number(item.volume);
+      askOrderbook[item.price] = accumVol;
+   
     });
-    orderbook.BID.map(item => {
+    
+    accumVol = 0;
+
+    let bidOrderbook = {};
+    let reverseBid = orderbook.BID;
+
+    reverseBid.forEach(item => {
+      accumVol += Number(item.volume);
       chartData.push(Number(item.price));
-      bidOrderbook[item.price] = Number(item.volume);
+      bidOrderbook[item.price] = accumVol;
     });
 
     chartData = chartData.sort(function(a, b) {
@@ -177,53 +185,58 @@ class Orderbook extends Component {
     });
 
     chartData = Util.removeDuplicateArray(chartData);
+    let tmpAsk = 0;
+    let tmpBid = 0;
 
-    chartData.forEach(price => {
-      let data = {
-        name : price,
-        ASK  : askOrderbook[price] ? askOrderbook[price] : 0,
-        BID  : bidOrderbook[price] ? bidOrderbook[price] : 0
-      }
-      toSetChartData.push(data);
-    });  
+    chartData.forEach((price, index) => {
 
-
-    let sendChartData = [];
-    let tosave = {
-      name : 0,
-      ASK : 0,
-      BID : 0
-    }
-
-    toSetChartData.forEach((chartData, index) => {
-
-      if(index%this.chartCount === 0) {
-        if(index !== 0) {
-          sendChartData.push({
-            name : tosave.name,
-            ASK : tosave.ASK,
-            BID : tosave.BID
-          });
+      if(index === 0) {
+        let data = {
+          name : price,
+          ASK  : askOrderbook[price] ? askOrderbook[price] : 0,
+          BID  : bidOrderbook[price] ? bidOrderbook[price] : 0
         }
-        tosave.name = chartData.name;
-        tosave.ASK  = chartData.ASK;
-        tosave.BID  = chartData.BID;
+        tmpAsk = data.ASK;
+        tmpBid = data.BID;
+
+        toSetChartData.push(data);
 
       }
       else {
-        tosave.ASK += chartData.ASK;
-        tosave.BID += chartData.BID;
-        if(toSetChartData.length-1 === index) {
-          sendChartData.push({
-            name : tosave.name,
-            ASK : tosave.ASK,
-            BID : tosave.BID
-          });
-        }
-      }
-    });
 
-    return sendChartData;
+        let data = {
+          name : price,
+          ASK  : askOrderbook[price] ? askOrderbook[price] : tmpAsk,
+          BID  : bidOrderbook[price] ? bidOrderbook[price] : tmpBid
+        }
+        if(price === Object.keys(askOrderbook)[0]) {
+          tmpAsk = 0;
+        }
+        else {
+          tmpAsk = data.ASK;
+        }
+
+        if(price === Number(Object.keys(bidOrderbook)[0])) {
+          tmpBid = 0;
+        }
+        else {
+          tmpBid = data.BID;
+        }
+
+        toSetChartData.push(data);
+      }
+
+      
+
+    });  
+
+
+    console.log(Object.keys(bidOrderbook)[0]);
+    // console.log(orderbook.BID[0].price , orderbook.BID[9].price);
+    // console.log(toSetChartData);
+
+    return toSetChartData;
+
 
   }
 
@@ -322,7 +335,7 @@ class Orderbook extends Component {
         {
 
           this.state.ASK.map((item, index) => {
-            if(index < this.orderbookCount) {
+            if(index <= this.orderbookCount) {
               return (
                 <tr>
                   <td style={{width:"200px" , color:"#c8d6e5"}}>{Util.paddingZero(item.volume, 7)}</td>
@@ -341,7 +354,7 @@ class Orderbook extends Component {
       <tbody className="orderbook-tbody">
         {
           this.state.BID.map((item, index) => {
-            if(index < this.orderbookCount) {
+            if(index <= this.orderbookCount) {
 
               return (
                 <tr>
@@ -519,14 +532,21 @@ class Orderbook extends Component {
 
 
                   <div className="depth-chart">
+
                     <AreaChart width={520} height={200} data={this.state.chart_data ? this.state.chart_data : []}
-                        margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                        margin={{ top: 10, right: 0, left: 0, bottom: 0 }} ifOverflow="extendDomain">
                       <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} tickCount={100}/>
                       <YAxis hide={true}/>
+
+                      {/* <ReferenceLine x={this.state.ASK ? this.state.ASK[this.orderbookCount - 1].price : null} stroke="rgb(255, 93, 50)" strokeWidth={2} alwaysShow={true}
+                                      label = {this.state.ASK ? this.state.ASK[this.orderbookCount - 1].price : null}/>
+                      <ReferenceLine x={this.state.BID ? this.state.BID[0].price : null} stroke="rgb(121, 246, 91)" strokeWidth={2} alwaysShow={true}/> */}
+
                       <Tooltip active={true} cursor={{ stroke: 'red', strokeWidth: 2 }}/>
                       <Area type='monotone' animationDuration={1000} dataKey='ASK' stroke='rgb(255, 93, 50)' strokeWidth = {3} fill='rgb(68, 44, 41)' />
                       <Area type='monotone' animationDuration={1000} dataKey='BID' stroke='rgb(121, 246, 91)' strokeWidth = {3} fill='rgb(41, 74, 49)' />
                     </AreaChart>
+
                   </div>
                 </Col>
                 
