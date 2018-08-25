@@ -94,60 +94,62 @@
 .ordersend-sell-button {
   font-family: 'Montserrat', Arial, Helvetica, sans-serif;
   width: 200px;
-  background:#CC6666;
+  background:rgb(82, 176, 120);
   border-radius:5px;
   border:0;
   cursor:pointer;
   color:white;
-  font-size:20px;
+  font-size:17px;
   transition: all 0.3s;
   margin-top: 4px;
-  font-weight:700;
-  height: 40px;
+  font-weight:400;
+  height: 30px;
 }
 .ordersend-sell-button:hover {
-  background:rgb(167, 46, 46);
+  background:rgb(43, 90, 62);
 }
 
 .ordersend-buy-button {
   font-family: 'Montserrat', Arial, Helvetica, sans-serif;
   width: 200px;
-  background:rgb(59, 83, 150);
+  background:rgb(226, 19, 70);
   border-radius:5px;
   border:0;
   cursor:pointer;
   color:white;
-  font-size:20px;
+  font-size:17px;
   transition: all 0.3s;
   margin-top: 4px;
-  font-weight:700;
-  height: 40px;
+  font-weight:400;
+  height: 30px;
 }
 .ordersend-buy-button:hover {
-  background:rgb(34, 49, 88);
+  background:rgb(155, 13, 48);
 }
 
 .ordersend-arb-button {
   font-family: 'Montserrat', Arial, Helvetica, sans-serif;
   width: 200px;
-  background:rgb(42, 128, 92);
+  background:#757575;
   border-radius:5px;
   border:0;
   cursor:pointer;
   color:white;
-  font-size:20px;
+  font-size: 17px;
   transition: all 0.3s;
   margin-top: 4px;
-  font-weight:700;
-  height: 40px;
+  font-weight: 400;
+  height: 30px;
+  padding : 0;
 }
 .ordersend-arb-button:hover {
-  background: rgb(20, 59, 43);
+  background: #424242;
 }
 
 .ordersend-container {
   color : white;
 }
+
 .ordersend-balance {
   float: left;
 }
@@ -175,6 +177,8 @@ tr, td {
   border-top: 1px solid #444444;
   border-collapse: collapse;
 }
+
+
 
 .depth-chart {
   margin-left: auto;

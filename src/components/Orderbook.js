@@ -24,7 +24,8 @@ class Orderbook extends Component {
     };
 
     this.orderbook_coin = ['BTC', 'ETH', 'EOS', 'BCH', 'BTG', 'ETC', 'XRP', 'ZRX', 'REP'];
-
+    this.chartCount     = 15;
+    this.orderbookCount = 11;
   }
 
   onClickSelectCoin = (e) => {
@@ -164,7 +165,7 @@ class Orderbook extends Component {
     let askOrderbook = {};
     let bidOrderbook = {};
 
-    let toSetData = [];
+    let toSetChartData = [];
 
     orderbook.ASK.map(item => {
       chartData.push(Number(item.price));
@@ -187,10 +188,46 @@ class Orderbook extends Component {
         ASK  : askOrderbook[price] ? askOrderbook[price] : 0,
         BID  : bidOrderbook[price] ? bidOrderbook[price] : 0
       }
-      toSetData.push(data);
+      toSetChartData.push(data);
+    });  
+
+
+    let sendChartData = [];
+    let tosave = {
+      name : 0,
+      ASK : 0,
+      BID : 0
+    }
+
+    toSetChartData.forEach((chartData, index) => {
+
+      if(index%this.chartCount === 0) {
+        if(index !== 0) {
+          sendChartData.push({
+            name : tosave.name,
+            ASK : tosave.ASK,
+            BID : tosave.BID
+          });
+        }
+        tosave.name = chartData.name;
+        tosave.ASK  = chartData.ASK;
+        tosave.BID  = chartData.BID;
+
+      }
+      else {
+        tosave.ASK += chartData.ASK;
+        tosave.BID += chartData.BID;
+        if(toSetChartData.length-1 === index) {
+          sendChartData.push({
+            name : tosave.name,
+            ASK : tosave.ASK,
+            BID : tosave.BID
+          });
+        }
+      }
     });
 
-    return toSetData;
+    return sendChartData;
 
   }
 
@@ -293,12 +330,12 @@ class Orderbook extends Component {
         {
 
           this.state.ASK.map((item, index) => {
-            if(index < 10) {
+            if(index < this.orderbookCount) {
               return (
                 <tr>
-                  <td style={{width:"200px"}}>{item.price}</td>
-                  <td style={{width:"200px"}}>{item.volume}</td>
-                  <td style={{width:"200px"}}>{item.market}</td>
+                  <td style={{width:"200px" , color:"#c8d6e5"}}>{Util.paddingZero(item.volume, 7)}</td>
+                  <td style={{width:"200px" , color:"rgb(226, 19, 70)"}}>{item.price}</td>
+                  <td style={{width:"200px"  , color:"#8395a7"}}>{item.market}</td>
                 </tr>
               );
             }
@@ -312,13 +349,13 @@ class Orderbook extends Component {
       <tbody className="orderbook-tbody">
         {
           this.state.BID.map((item, index) => {
-            if(index < 10) {
+            if(index < this.orderbookCount) {
 
               return (
                 <tr>
-                  <td style={{width:"200px"}}>{item.price}</td>
-                  <td style={{width:"200px"}}>{item.volume}</td>
-                  <td style={{width:"200px"}}>{item.market}</td>
+                  <td style={{width:"200px" , color:"#c8d6e5"}}>{Util.paddingZero(item.volume, 7)}</td>
+                  <td style={{width:"200px" , color:"rgb(82, 176, 120)"}}>{item.price}</td>
+                  <td style={{width:"200px"  , color:"#8395a7"}}>{item.market}</td>
                 </tr>
               );
             }
@@ -339,11 +376,11 @@ class Orderbook extends Component {
         <tr>
           <td>Req. Funds</td>
           <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.fiat.benefit}</td>
-          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.fiat.profit}</td>
+          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.coin.benefit} </td>
         </tr>
         <tr>
           <td>Profit</td>
-          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.coin.benefit} </td>
+          <td style={{color:"gold"}}>₩ {this.state.ARB_INFO.fiat.profit}</td>
           <td style={{color:"gold"}}>{this.state.ARB_INFO.coin.profit} {this.state.currency}</td>
         </tr>
         <tr>
@@ -431,17 +468,6 @@ class Orderbook extends Component {
         {/* arbitrage information */}
         {arbInfoArea}
         
-        <div className="depth-chart">
-          <AreaChart width={1800} height={200} data={this.state.chart_data ? this.state.chart_data : []}
-              >
-            <XAxis dataKey="name"/>
-            <YAxis/>
-            <Tooltip active={false}/>
-            <Area type='monotone' dataKey='ASK'  stroke='rgb(59, 83, 150)' fill='rgb(59, 83, 150)' />
-            <Area type='monotone' dataKey='BID'  stroke='#CC6666' fill='#CC6666' />
-          </AreaChart>
-        </div>
-
 
         <Container>
           <Row>
@@ -466,7 +492,7 @@ class Orderbook extends Component {
 
             <Col>
 
-              <Container>
+              <Container style={{padding:"0"}}>
                 <Col>
                   <Button className="ordersend-invest-rate" color={this.state.invest_rate === '1' ? 'warning' : 'secondary'} 
                   onClick={this.onClickInvestRate} id={"1"} >100%</Button>  
@@ -485,7 +511,7 @@ class Orderbook extends Component {
                 </Col>
 
                 <Col>
-                  <Container>
+                  <Container style={{padding:"1px"}}>
                     <Row>
                       {orderSendArea(this.state.ORDERSEND)}
                     </Row>
@@ -494,9 +520,22 @@ class Orderbook extends Component {
 
                 </Col>
                 <Col>
+
                   <form className="ordersend-form">  
                     <input type="submit" value="BUY-SELL" className="ordersend-arb-button"/>    
                   </form>
+
+
+                  <div className="depth-chart">
+                    <AreaChart width={520} height={200} data={this.state.chart_data ? this.state.chart_data : []}
+                        margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                      <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} tickCount={this.chartCount}/>
+                      <YAxis hide={true}/>
+                      <Tooltip active={false}/>
+                      <Area type='monotone' dataKey='ASK'  stroke='rgb(255, 93, 50)' strokeWidth = {3} fill='rgb(68, 44, 41)' />
+                      <Area type='monotone' dataKey='BID'  stroke='rgb(121, 246, 91)' strokeWidth = {3} fill='rgb(41, 74, 49)' />
+                    </AreaChart>
+                  </div>
                 </Col>
                 
               </Container>
