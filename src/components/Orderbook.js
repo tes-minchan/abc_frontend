@@ -187,6 +187,7 @@ class Orderbook extends Component {
     chartData = Util.removeDuplicateArray(chartData);
     let tmpAsk = 0;
     let tmpBid = 0;
+    const bidLength = Object.keys(bidOrderbook).length;
 
     chartData.forEach((price, index) => {
 
@@ -209,32 +210,17 @@ class Orderbook extends Component {
           ASK  : askOrderbook[price] ? askOrderbook[price] : tmpAsk,
           BID  : bidOrderbook[price] ? bidOrderbook[price] : tmpBid
         }
-        if(price === Object.keys(askOrderbook)[0]) {
-          tmpAsk = 0;
-        }
-        else {
-          tmpAsk = data.ASK;
-        }
+        tmpAsk = data.ASK;
+        tmpBid = data.BID;
 
-        if(price === Number(Object.keys(bidOrderbook)[0])) {
+        if(price >= Number(Object.keys(bidOrderbook)[bidLength-1])) {
           tmpBid = 0;
         }
-        else {
-          tmpBid = data.BID;
-        }
-
         toSetChartData.push(data);
       }
 
-      
-
     });  
-
-
-    console.log(Object.keys(bidOrderbook)[0]);
-    // console.log(orderbook.BID[0].price , orderbook.BID[9].price);
-    // console.log(toSetChartData);
-
+    
     return toSetChartData;
 
 
