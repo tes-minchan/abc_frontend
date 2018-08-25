@@ -50,6 +50,16 @@ class Header extends Component {
   }
 
   render() {
+    const userid_sytle = {
+      color:"#009432", 
+      fontSize:"17px",
+      fontWeight: "bold"
+    };
+
+    const sign_button_style = {
+      marginTop: "4px"
+    } 
+
     const userinfoArea = this.state.userid? (
     
       <Fragment>
@@ -59,8 +69,10 @@ class Header extends Component {
         <NavItem>
           <NavLink href="/Setting" >Setting</NavLink>
         </NavItem>
-        <h4><Badge color="success" className="userid">{this.state.userid}</Badge></h4>
-        <Form onClick={this.onClickSignOut}>
+        <NavItem>
+          <NavLink disabled style={userid_sytle} >{this.state.userid}</NavLink>
+        </NavItem>
+        <Form onClick={this.onClickSignOut} style={sign_button_style}>
           <Button outline color="primary" className="signout">Sign Out</Button>
         </Form>
       </Fragment>
