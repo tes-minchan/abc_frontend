@@ -9,3 +9,10 @@ export const convertFloatDigit = (number,digit) =>{
 export const paddingZero = (num,n) => {
   return parseFloat(Math.round(num * Math.pow(10, n)) /Math.pow(10,n)).toFixed(n);
 }
+
+export const removeDuplicateArray = (arr) => {
+  let s = new Set(arr);
+  let it = s.values();
+  return Array.from(it);
+}
+

@@ -24,7 +24,7 @@ class Orderbook extends Component {
     };
 
     this.orderbook_coin = ['BTC', 'ETH', 'EOS', 'BCH', 'BTG', 'ETC', 'XRP', 'ZRX', 'REP'];
-    this.chartCount     = 15;
+    this.chartCount     = 7;
     this.orderbookCount = 11;
   }
 
@@ -153,11 +153,7 @@ class Orderbook extends Component {
 
   }
 
-  remove_duplicates_es6 = (arr) => {
-    let s = new Set(arr);
-    let it = s.values();
-    return Array.from(it);
-  }
+
 
   createChartData = (orderbook) => {
 
@@ -180,7 +176,7 @@ class Orderbook extends Component {
       return a - b;
     });
 
-    chartData = this.remove_duplicates_es6(chartData);
+    chartData = Util.removeDuplicateArray(chartData);
 
     chartData.forEach(price => {
       let data = {
@@ -262,17 +258,13 @@ class Orderbook extends Component {
           volume : orderbook.BID[0].volume
         }
 
-        const ordersendInfo = this.calculateOrdesend(buyInfo, sellInfo);
-
-        const chartData = this.createChartData(orderbook);
-
         this.setState({
-          chart_data : chartData,
+          chart_data : this.createChartData(orderbook),
           ASK : ask_orderbook.reverse(),
           BID : orderbook.BID, 
           GAP : (bidPrice - askPrice),
           ARB_INFO  : arbInfo,
-          ORDERSEND : ordersendInfo,
+          ORDERSEND : this.calculateOrdesend(buyInfo, sellInfo),
 
         });
       }
@@ -480,8 +472,8 @@ class Orderbook extends Component {
               </table>  
 
               <h3>
-                <span className="gapText">{this.state.currency}  </span> 
-                <span className="gapNumber">  {this.state.GAP}</span>
+                {/* <span className="gapText">{this.state.currency}  </span>  */}
+                <span className="gapNumber">{this.state.GAP}</span>
               </h3>
 
               <table className="orderbook-table">
@@ -529,11 +521,11 @@ class Orderbook extends Component {
                   <div className="depth-chart">
                     <AreaChart width={520} height={200} data={this.state.chart_data ? this.state.chart_data : []}
                         margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
-                      <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} tickCount={this.chartCount}/>
+                      <XAxis dataKey="name" type="number" domain={['dataMin', 'dataMax']} tickCount={100}/>
                       <YAxis hide={true}/>
-                      <Tooltip active={false}/>
-                      <Area type='monotone' dataKey='ASK'  stroke='rgb(255, 93, 50)' strokeWidth = {3} fill='rgb(68, 44, 41)' />
-                      <Area type='monotone' dataKey='BID'  stroke='rgb(121, 246, 91)' strokeWidth = {3} fill='rgb(41, 74, 49)' />
+                      <Tooltip active={true} cursor={{ stroke: 'red', strokeWidth: 2 }}/>
+                      <Area type='monotone' animationDuration={1000} dataKey='ASK' stroke='rgb(255, 93, 50)' strokeWidth = {3} fill='rgb(68, 44, 41)' />
+                      <Area type='monotone' animationDuration={1000} dataKey='BID' stroke='rgb(121, 246, 91)' strokeWidth = {3} fill='rgb(41, 74, 49)' />
                     </AreaChart>
                   </div>
                 </Col>

@@ -49,8 +49,9 @@
 }
 
 .gapNumber {
-  color : goldenrod;
-  text-align: left;
+  color : #e1b12c;
+  font-size: 1.8rem;
+  /* text-align: left; */
 }
 
 .arbitrage-info {
