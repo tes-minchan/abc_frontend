@@ -688,7 +688,7 @@ class Orderbook extends Component {
                         dataKey="GAP"
                         stroke="#6e92c7"
                         strokeWidth={1.6}
-                        fill="#40407a"
+                        fill="#6e92c7"
                       />
 
                     </AreaChart>
