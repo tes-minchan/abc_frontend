@@ -5,8 +5,8 @@ export const SignIn = Api.signin;
 export const SignUp = Api.signup;
 
 /* Market API */
-export const GetBalance   = Api.getBalance;
-export const OrderSendBuy = Api.orderSendBuy;
+export const GetBalance = Api.getBalance;
+export const OrderSend  = Api.orderSend;
 
 
 

@@ -40,9 +40,9 @@ export const getBalance = () => {
 }
 
 
-export const orderSendBuy = (data) => {
+export const orderSend = (data) => {
 
-  const baseUrl = API_URL+'market/ordersend/buy';
+  const baseUrl = API_URL+'market/ordersend';
   return axios.post(
     baseUrl, 
     data,
