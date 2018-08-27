@@ -1,8 +1,12 @@
 import * as Api from 'lib/apiMethod';
 
+/* Internal API */
 export const SignIn = Api.signin;
 export const SignUp = Api.signup;
-export const GetBalance = Api.getBalance;
+
+/* Market API */
+export const GetBalance   = Api.getBalance;
+export const OrderSendBuy = Api.orderSendBuy;
 
 
 

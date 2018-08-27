@@ -16,3 +16,26 @@ export const removeDuplicateArray = (arr) => {
   return Array.from(it);
 }
 
+export const expressKRW = (num) => {
+
+  if(Number(num) < 1) {
+    return num;
+  }
+  else {
+
+    let len, point, str;  
+  
+    num = num + "";  
+    point = num.length % 3 ;
+    len = num.length;  
+  
+    str = num.substring(0, point);  
+    while (point < len) {  
+        if (str != "") str += ",";  
+        str += num.substring(point, point + 3);  
+        point += 3;  
+    }  
+  
+    return str;
+  }
+}

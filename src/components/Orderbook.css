@@ -1,33 +1,29 @@
-@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
 .orderbook-table {
-  color : white;
+  color: white;
   text-align: center;
-  width : 600px;
-
+  width: 600px;
 }
 
-.orderbook-tbody td{
+.orderbook-tbody td {
   height: 5px;
-  padding-top : 2px;
-  padding-bottom : 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
   font-weight: 10;
   font-size: 12px;
   color: whitesmoke;
-
 }
 .orderbook-tbody td:nth-child(1) {
-  color:aquamarine;
+  color: aquamarine;
 }
 
 .orderbook-tbody td:nth-child(2) {
-  color:aquamarine;
+  color: aquamarine;
 }
 
-
-.orderbook-content h3{
+.orderbook-content h3 {
   color: black;
-  background-color: #42403C;
-  text-align: center;  
+  background-color: #42403c;
+  text-align: center;
 }
 
 .orderbook-select {
@@ -39,147 +35,146 @@
 }
 
 .orderbook-button {
-  padding : 10px;
-  margin : 10px;
+  padding: 10px;
+  margin: 10px;
 }
 
 .gapText {
-  color : whitesmoke;
-
+  color: whitesmoke;
 }
 
 .gapNumber {
-  color : #e1b12c;
+  color: #e1b12c;
   font-size: 1.8rem;
   /* text-align: left; */
 }
 
 .arbitrage-info {
-  color: #C7922C;
+  color: #c7922c;
   text-align: center;
   font-size: 15px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   height: 47px;
 }
 
-
 /* ordersend button css */
 
 .ordersendText {
   float: left;
-  color:white;
+  color: white;
   height: 38px;
-  font-size:15px;
-  padding-top : 4px;
+  font-size: 15px;
+  padding-top: 4px;
 }
 
 .ordersend-input {
-  color:white;
+  color: white;
   font-family: Helvetica, Arial, sans-serif;
-  font-weight:500;
+  font-weight: 500;
   font-size: 18px;
   border-radius: 5px;
   line-height: 22px;
   background-color: transparent;
-  border:1px solid white;
+  border: 1px solid white;
   transition: all 0.3s;
   padding: 13px;
   margin-bottom: 8px;
-  width:150px;
+  width: 150px;
   height: 30px;
   box-sizing: border-box;
-  outline:0;
+  outline: 0;
   float: right;
 }
 
 .ordersend-sell-button {
-  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
   width: 200px;
-  background:rgb(82, 176, 120);
-  border-radius:5px;
-  border:0;
-  cursor:pointer;
-  color:white;
-  font-size:17px;
-  transition: all 0.3s;
-  margin-top: 4px;
-  font-weight:400;
-  height: 30px;
-}
-.ordersend-sell-button:hover {
-  background:rgb(43, 90, 62);
-}
-
-.ordersend-buy-button {
-  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
-  width: 200px;
-  background:rgb(226, 19, 70);
-  border-radius:5px;
-  border:0;
-  cursor:pointer;
-  color:white;
-  font-size:17px;
-  transition: all 0.3s;
-  margin-top: 4px;
-  font-weight:400;
-  height: 30px;
-}
-.ordersend-buy-button:hover {
-  background:rgb(155, 13, 48);
-}
-
-.ordersend-arb-button {
-  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
-  width: 200px;
-  background:#757575;
-  border-radius:5px;
-  border:0;
-  cursor:pointer;
-  color:white;
+  background: rgb(82, 176, 120);
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+  color: white;
   font-size: 17px;
   transition: all 0.3s;
   margin-top: 4px;
   font-weight: 400;
   height: 30px;
-  padding : 0;
+  padding-top: 3px;
+}
+.ordersend-sell-button:hover {
+  background: rgb(43, 90, 62);
+}
+
+.ordersend-buy-button {
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  width: 200px;
+  background: rgb(226, 19, 70);
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  font-size: 17px;
+  transition: all 0.3s;
+  margin-top: 4px;
+  font-weight: 400;
+  height: 30px;
+  padding-top: 3px;
+}
+.ordersend-buy-button:hover {
+  background: rgb(155, 13, 48);
+  /* background: #6e92c7; */
+
+}
+
+.ordersend-arb-button {
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  width: 200px;
+  background: #40407a;
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  font-size: 17px;
+  transition: all 0.3s;
+  margin-top: 4px;
+  font-weight: 400;
+  height: 30px;
+  padding: 0;
 }
 .ordersend-arb-button:hover {
   background: #424242;
 }
 
 .ordersend-container {
-  color : white;
+  color: white;
 }
 
 .ordersend-balance {
   float: left;
 }
-.ordersend-values { 
-  color : gold;
+.ordersend-values {
+  color: gold;
   text-align: right;
 }
 
-
 .ordersend-invest-rate {
-  margin : 5px 15px 5px auto;
+  margin: 5px 15px 5px auto;
   font-size: 14px;
 }
 
-.arbitrage-table-info{
-  color:white;
+.arbitrage-table-info {
+  color: white;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
   width: 500px;
-  
 }
 
-tr, td { 
+tr,
+td {
   border-top: 1px solid #444444;
   border-collapse: collapse;
 }
-
-
 
 .depth-chart {
   margin-left: auto;
