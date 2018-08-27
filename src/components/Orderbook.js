@@ -68,30 +68,23 @@ class Orderbook extends Component {
    */
   onClickOrdersend = e => {
 
-    if (e.target.id === "BUY") {
-      const orderinfo = {
-        market : this.state.ORDERSEND.buy_market,
-        coin   : this.state.currency,
-        side   : e.target.id,
-        price  : this.state.ORDERSEND.buy_price,
-        volume : this.state.ORDERSEND.buy_volume,
-      }
-
-      Api.OrderSendBuy(orderinfo)
-      .then((data) => {
-        console.log("onClickOrdersend BUY");
-        console.log(data);
-      }, (err) => {
-        // Need to error control
-        console.log(err.response.data)
-      });
-
-
-    } else {
-      console.log(this.state.ORDERSEND.sell_market);
-      console.log(this.state.ORDERSEND.sell_volume);
-      console.log(this.state.ORDERSEND.sell_price);
+    const orderinfo = {
+      market : this.state.ORDERSEND.buy_market,
+      coin   : this.state.currency,
+      side   : e.target.id,
+      price  : this.state.ORDERSEND.buy_price,
+      volume : this.state.ORDERSEND.buy_volume,
     }
+
+    Api.OrderSend(orderinfo)
+    .then((data) => {
+      console.log("onClickOrdersend BUY");
+      console.log(data);
+    }, (err) => {
+      // Need to error control
+      console.log(err.response.data)
+    });
+
   };
 
   convertFloatDigit = (number, digit) => {
@@ -690,7 +683,6 @@ class Orderbook extends Component {
                         strokeWidth={1.6}
                         fill="#6e92c7"
                       />
-
                     </AreaChart>
                   </div>
                 </Col>
