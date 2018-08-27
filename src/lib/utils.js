@@ -22,6 +22,7 @@ export const expressKRW = (num) => {
     return num;
   }
   else {
+    num = Math.floor(num);
 
     let len, point, str;  
   
