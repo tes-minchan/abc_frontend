@@ -10,6 +10,7 @@ import "./Orderbook.css";
 import websocket from "config";
 import * as Api from "lib/api";
 import * as Util from "lib/utils";
+import _ from 'underscore';
 
 class Orderbook extends Component {
   constructor(props) {
@@ -33,22 +34,34 @@ class Orderbook extends Component {
       "REP"
     ];
     this.orderbookCount = 10;
+
+    const userSubscribeCoin = sessionStorage.getItem('subsCoinList')? sessionStorage.getItem('subsCoinList') : null;
+    this.subscribeMarket = JSON.parse(userSubscribeCoin);
+
   }
 
   onClickSelectCoin = e => {
+
+    let toSubscribeMarket;
+    const subCurrency = e.target.id;
+    this.subscribeMarket.forEach(item => {
+      if(item.name === subCurrency) {
+        toSubscribeMarket = item;
+        return;
+      }
+    })   
+    
     let subscribe = {
       channel: "subscribe_orderbook",
-      currency: e.target.id
+      currency: e.target.id,
+      subscribe_market : toSubscribeMarket
     };
-
     this.socket.send(JSON.stringify(subscribe));
 
     this.setState({
       currency: e.target.id
     });
 
-    // modal open func
-    // this.test.open();
   };
 
   onClickInvestRate = e => {
@@ -78,7 +91,7 @@ class Orderbook extends Component {
 
     Api.OrderSend(orderinfo)
     .then((data) => {
-      console.log("onClickOrdersend BUY");
+      console.log("onClickOrdersend");
       console.log(data);
     }, (err) => {
       // Need to error control
@@ -295,12 +308,28 @@ class Orderbook extends Component {
   };
 
   onSocketOpen = () => {
-    let subscribe = {
-      channel: "subscribe_orderbook",
-      currency: this.state.currency
-    };
 
-    this.socket.send(JSON.stringify(subscribe));
+    if(this.state) {
+
+      let toSubscribeMarket;
+      const subCurrency = this.state.currency;
+      this.subscribeMarket.forEach(item => {
+        if(item.name === subCurrency) {
+          toSubscribeMarket = item;
+          return;
+        }
+      })
+
+      let subscribe = {
+        channel: "subscribe_orderbook",
+        currency: this.state.currency,
+        subscribe_market : toSubscribeMarket
+      };
+  
+      this.socket.send(JSON.stringify(subscribe));
+
+    }
+
   };
 
   componentDidMount() {
@@ -317,7 +346,7 @@ class Orderbook extends Component {
       Api.GetBalance().then(
         data => {
           this.setState({
-            WALLET: data.data
+            WALLET: data.message
           });
         },
         err => {
@@ -328,6 +357,7 @@ class Orderbook extends Component {
   }
 
   render() {
+    console.log(this.state);
     const askOrderbookArea = this.state.ASK ? (
       <tbody className="orderbook-tbody">
         {this.state.ASK.map((item, index) => {
@@ -691,11 +721,6 @@ class Orderbook extends Component {
           </Row>
         </Container>
 
-        <Modal
-          onRef={ref => {
-            this.test = ref;
-          }}
-        />
       </Fragment>
     );
   }

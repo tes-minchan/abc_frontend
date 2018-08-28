@@ -40,7 +40,7 @@ class Login extends Component {
 
     Api.SignIn(userinfo)
     .then((data) => {
-      sessionStorage.setItem('token', data.data);
+      sessionStorage.setItem('token', data.message);
       this.setState({registered : 1});
     }, (err) => {
       // Need to error control
